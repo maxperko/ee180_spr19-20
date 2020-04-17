@@ -1,2 +1,24 @@
-lastname, firstname
-yoursunetid@stanford.edu
+Hira, Nikhil Bharat
+nhira7@stanford.edu
+
+Perko, Max Edward
+maxperko@stanford.edu
+
+EE 180 - Lab 1
+
+*************************************************************************
+
+In short, we've tried to follow the lecture slide examples for recursive
+function calls, as well as for- and while-loop conventions of checking 
+conditionals and branching to block bodies only after conditions have 
+been met.
+
+Our implementation of the mergesort routine is relatively straightforward
+and very well commented, though may not be the most heavily optimized.
+We've attempted to preserve all callee saved registers using fewer than 
+thirty-two bytes of stack space, per the lecture slide conventions, and
+made clever use of all temporary ($t0-t9) registers prior to digging into
+callee-saved regs (e.g. $s0-s7).
+
+
+
