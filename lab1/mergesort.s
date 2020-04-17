@@ -83,10 +83,17 @@ read_loop:
     addiu   $t0, $t0, 4
 
 read_loop_cond:
-    bne     $t0, $t1, read_loop 
+    bne     $t0, $t1, read_loop
 
     #---- Call Mergesort ---------------------------------------
     # ADD YOUR CODE HERE! 
+	
+	li		$v0, 9				# sbrk
+	move	$a0, $s2			# set up the argument for sbrk, number of bytes needed
+	syscall
+	move    $a2, $v0            # the addr of allocated memory for temp_array
+	move	$a1, $s2			# move array_size into a1
+	jal		mergesort
 
     # You must use a syscall to allocate
     # temporary storage (temp_array in the C implementation)
@@ -129,7 +136,43 @@ print_loop_cond:
 
 # ADD YOUR CODE HERE! 
 
-mergesort: 
+mergesort:
+	slti	$t0, $a1, 2			# check n < 2
+	beq		$t0, $zero, skip 
+	jr		$ra
+
+skip:
+	addiu   $sp, $sp, -32		# start callee setup
+    sw      $ra, 28($sp)
+	sw		$fp, 24($sp)
+	addiu	$fp, $sp, 28
+	sw		$s0, 20($sp)		# end callee setup
+	sw		$a0, 16($sp)		# start recursive caller setup
+	sw		$a1, 12$sp)
+	sw		$a2, 8($sp)
+	sw 		$a3, 4($sp)			# end recursive caller setup
+	
+	move	$s0, $a1			# $s0 = n
+	srl		$a1, $a1, 1			# mid = n/2
+	jal		mergesort			# a0 = array, a1 = mid, a2 = temp_array
+	
+	addu	$a0, $a0, $a1		# array + mid
+	move	$a3, $a1			# $a3 = mid
+	sub		$a1, $s0, $a1		# $a1 = n - mid
+	jal		mergesort			# a0 = array + mid, a1 = n - mid, a2 = temp_array
+	
+	sub		$a0, $a0, $a3		# a0 = array + mid - mid
+	move	$a1, $s0			# a1 = n
+	jal		merge
+	
+	lw		$a0, 16($sp)		# start recursive caller teardown
+	lw		$a1, 12($sp)
+	lw		$a2, 8($sp)
+	lw		$a3, 4($sp)			# end recursive caller teardown
+	lw		$s0, 20($20)		# start callee teardown
+	lw		$fp, 24($sp)
+	lw      $ra, 28($sp)		# end callee teardown
+    addiu   $sp, $sp, 32
     jr      $ra
 
 merge:
