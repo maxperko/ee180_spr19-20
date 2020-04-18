@@ -150,12 +150,13 @@ mergesort_skip:
 	sw		$a0, 16($sp)		# start recursive caller setup
 	sw		$a1, 12$sp)
 	sw		$a2, 8($sp)
-	sw 		$a3, 4($sp)			# end recursive caller setup
-	
+	sw 		$a3, 4($sp)
+    sw		$s2, 0($sp) 		# end recursive caller setup
+
 	move	$s0, $a1			# $s0 = n
 	srl		$a1, $a1, 1			# mid = n/2
 	jal		mergesort			# a0 = array, a1 = mid, a2 = temp_array
-	
+
 	addu	$a0, $a0, $a1		# array + mid
 	move	$a3, $a1			# $a3 = mid
 	sub		$a1, $s0, $a1		# $a1 = n - mid
@@ -169,7 +170,8 @@ mergesort_skip:
 	lw		$a1, 12($sp)
 	lw		$a2, 8($sp)
 	lw		$a3, 4($sp)			# end recursive caller teardown
-	lw		$s0, 20($20)		# start callee teardown
+	lw		$s0, 20($sp)		# start callee teardown
+    lw      $s2, 0($sp)     
 	lw		$fp, 24($sp)
 	lw      $ra, 28($sp)		# end callee teardown
     addiu   $sp, $sp, 32
@@ -192,6 +194,7 @@ merge:
     sub     $t3, $a1, $a3       # rn = $t3 = n - mid
     add     $t4, $a0, $a3       # *rarr = $t4 = array + mid
     j		merge_while_cond	# jump to merge_while_cond
+
 merge_while_loop:
     sll     $t8, $t1, 2             # $t8 = lpos * 4
     sll     $t9, $t2, 2             # $t9 = rpos * 4
@@ -207,19 +210,22 @@ merge_while_loop:
     addi    $t0, $t0, 1             # tpos++
     addi    $t1, $t1, 1             # lpos++
     j		merge_while_cond		# jump to merge_while_cond
+
 merge else:
     sll     $s7, $t0, 2             # $s7 = tpos * 4
     add     $s7, $a2, $s7           # &(temp_array[tpos]) = &($a2[$t0])
     sw      $t9, 0($s7)             # temp_array[tpos] = rarr[rpos], $a2[$t0] = $t4[$t2]
     addi    $t0, $t0, 1             # tpos++
     addi    $t2, $t2, 1             # rpos++
+
 merge_while_cond:
     slt     $t5, $t1, $a3                   # $t5 = (lpos < mid)
     slt     $t6, $t2, $t3                   # $t6 = (rpos < n-mid)
     and     $t7, $t5, $t6                   # $t7 = (lpos < mid) && (rpos < n-mid)
     bne     $t7, $zero, merge_while_loop    # if $t7 = 1 != 0 goto while loop
+
 merge_if_lpos:
-    bne     $t5, $zero, merge_end_cond       # goto merge_if_rpos if (lpos < mid)
+    beq     $t5, $zero, merge_if_rpos       # goto merge_if_rpos if (lpos > mid)
     sll     $s6, $t0, 2                     # $s6 = tpos * 4
     sll     $s7, $t1, 2                     # $s7 = lpos * 4
     add     $s3, $a2, $s6                   # $s3 = $a2 + $s6 = temp_array + tpos
@@ -229,8 +235,9 @@ merge_if_lpos:
     move    $a1, $s4
     move    $a2, $s5
     jal     arrcpy                          # call arrcpy
+
 merge_if_rpos:
-    bne     $t6, $zero, merge_end           # goto merge_if_rpos if (rpos < rn)
+    beq     $t6, $zero, merge_end           # goto merge_end if (rpos > rn)
     sll     $s6, $t0, 2                     # $s6 = tpos * 4
     sll     $s7, $t2, 2                     # $s7 = rpos * 4
     add     $s3, $a2, $s6                   # $s3 = $a2 + $s6 = temp_array + tpos
@@ -240,11 +247,13 @@ merge_if_rpos:
     move    $a1, $s4
     move    $a2, $s5
     jal     arrcpy                          # call arrcpy
+
 merge_end:
     move    $t0, $a1
     move    $a1, $a2
     move    $a2, $t0
     jal     arrcpy              # call arrcpy
+
     lw		$a0, 16($sp)		# start recursive caller teardown
 	lw		$a1, 12($sp)
 	lw		$a2, 8($sp)
@@ -257,7 +266,8 @@ merge_end:
 
 arrcpy:
     add     $t0, $zero, $zero   # init i = 0
-    j		arrcpy_test				# jump to test
+    j		arrcpy_test			# jump to test
+
 arrcpy_loop:    
     sll     $t1, $t0, 2         # $t1 = i*4
     add     $t1, $a1, $t1       # &(src[i])
@@ -266,7 +276,8 @@ arrcpy_loop:
     add     $t2, $a0, $t2       # &(dst[i])
     sw      $t1, 0($t2)         # dst[i] = src[i]
     addi    $t0, $t0, 1         # i++
+
 arrcpy_test:
-    slt     $t1, $t0, $a2       # $t1 = (i<n)
-    bne     $t1, $zero, arrcpy_loop    # if i<n, go to loop
+    slt     $t1, $t0, $a2               # $t1 = (i<n)
+    bne     $t1, $zero, arrcpy_loop     # if i<n, go to loop
     jr      $ra
