@@ -42,3 +42,69 @@ multiplication and division throughout the routine, including byte-alignment
 for integer pointer arithmetic.  The most difficult part of this section
 was ensuring proper use of the stack and preservation of callee-saved data
 throughout the recursive calls to the mergesort routine itself.
+
+merge:
+	- called at the end of mergesort
+	- callee setup: new stack frame to preserve $ra, $fp, $s0
+	- caller setup: saves caller saved items for recursive calls of mergesort ($a0-$a3)
+	- initialize parameters in $t_ registers
+	- jump ahead to merge_while_cond and only jump back to merge_while_loop if while condition is met
+	
+merge_while_cond:
+	- use additional $t_ registers to determine inequality values and then && condition
+	- branch to merge_while_loop if && result is 1, otherwise continue on to merge_if_lpos
+	
+merge_while_loop:
+	- use additional $t_ registers to store pos*4 values for pointer arithmetic and address determination
+	- lw to load values from determined adresses
+	- compare values and branch based to (merge_else) on condition
+	- tpos*4 to determine correct temp_array address
+	- sw to store values from array[lpos] to temp_array[tpos]
+	- addi to increment tpos, lpos
+	- jump back to merge_while_cond
+	
+merge_else:
+	- tpos*4 to determine correct temp_array address
+	- sw to store values from rarr[rpos] to temp_array[tpos]
+	- addi to increment tpos, rpos
+	- jump back to merge_while_cond
+	
+merge_if_lpos:
+	- use already determined condition value for %t (lpos < mid) register to conditionally branch to merge_if_rpos
+	- use $s_ registers to do more pointer arithmetic and determine new $a_ register values for arrcpy calls
+	- preserve original $a arguments for final arrcpy call in unused $s0-$s2 registers
+	- generate new $a0-$a2 values for intermediate arrcpy calls
+	- $s_ registers values do not need to be saved by arrcpy callee because arrcpy won't touch $s_ registers
+	- jump and link to arrcpy
+	- restore $a0-$a2 arguments from $s0-$s2 registers for final arrcpy call at end of merge function
+	
+	
+merge_if_rpos:
+	- use already determined condition value for %t (rpos < rn) register to conditionally branch to merge_end
+	- use $s_ registers to do more pointer arithmetic and determine new $a_ register values for arrcpy calls
+	- preserve original $a arguments for final arrcpy call in unused $s0-$s2 registers
+	- generate new $a0-$a2 values for intermediate arrcpy calls
+	- $s_ registers values do not need to be saved by arrcpy callee because arrcpy won't touch $s_ registers
+	- jump and link to arrcpy
+	- restore $a0-$a2 arguments from $s0-$s2 registers for final arrcpy call at end of merge function
+	
+merge_end:
+	- final arrcpy call (jal to arrcpy)
+	- restore saved register values from stack, pop stack, and return to mergesort
+	
+arrcpy:
+	- do not need to save any registers on stack (do not call other procedures or use registers needed by caller)
+	- initialize $t0 for i variable
+	- jump to test condition and only jump back to arrcpy_loop if condition is met
+	
+arrcpy_test:
+	- check condition and branch to arrcpy_loop based on condition value
+	- otherwise reutrn to caller
+	
+arrcpy_loop:
+	- sll for pointer arithmetic and determine addresses
+	- add to base adresses for arrays
+	- lw to load value from src array
+	- sw to store value into dst array
+	- addi to increment i
+	- continue into arrcpy_test
