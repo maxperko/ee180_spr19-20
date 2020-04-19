@@ -162,7 +162,7 @@ mergesort_skip:
     sll     $a1, $a1, 2         # mid*4
     addu	$a0, $a0, $a1		# array + mid*4
 	sub		$a1, $s0, $a3		# $a1 = n - mid
-	jal		mergesort			# a0 = array + mid*$, a1 = n - mid, a2 = temp_array
+	jal		mergesort			# a0 = array + mid*4, a1 = n - mid, a2 = temp_array
 	
 	sll     $a1, $a3, 2         # mid*4
     sub		$a0, $a0, $a1		# a0 = (array + mid*4) - mid*4
@@ -237,10 +237,16 @@ merge_if_lpos:
     add     $s3, $a2, $s6                   # $s3 = $a2 + $s6 = temp_array + tpos
     add     $s4, $a0, $s7                   # $s4 = $a0 + $s7 = array + lpos
     sub     $s5, $a3, $t1                   # $s5 = $a3 - $t1 = mid - lpos
-    move    $a0, $s3
-    move    $a1, $s4
-    move    $a2, $s5
+    move    $s0, $a0                        # preserve array in $s0
+    move    $s1, $a1                        # preserve n in $s1
+    move    $s2, $a2                        # preserve temp_array in $s2
+    move    $a0, $s3                        # $a0 = temp_array + tpos
+    move    $a1, $s4                        # $a1 = array + lpos
+    move    $a2, $s5                        # $a2 = mid - lpos
     jal     arrcpy                          # call arrcpy
+    move    $a0, $s0                        # restore $a0 = array for last arrcpy call
+    move    $a1, $s2                        # restore $a1 = temp_array for last arrcpy call
+    move    $a2, $s1                       # restore $a2 = n for last arrcpy call
 
 merge_if_rpos:
     beq     $t6, $zero, merge_end           # goto merge_end if (rpos > rn)
@@ -249,10 +255,16 @@ merge_if_rpos:
     add     $s3, $a2, $s6                   # $s3 = $a2 + $s6 = temp_array + tpos
     add     $s4, $t4, $s7                   # $s4 = $t4 + $s7 = rarr + rpos
     sub     $s5, $t3, $t2                   # $s5 = $t3 - $t2 = rn - rpos
-    move    $a0, $s3
-    move    $a1, $s4
-    move    $a2, $s5
+    move    $s0, $a0                        # preserve array in $s0
+    move    $s1, $a1                        # preserve n in $s1
+    move    $s2, $a2                        # preserve temp_array in $s2
+    move    $a0, $s3                        # $a0 = temp_array + tpos
+    move    $a1, $s4                        # $a1 = rarr + rpos
+    move    $a2, $s5                        # $a2 = rn - rpos
     jal     arrcpy                          # call arrcpy
+    move    $a0, $s0                        # restore $a0 = array for last arrcpy call
+    move    $a1, $s2                        # restore $a1 = temp_array for last arrcpy call
+    move    $a2, $s1                        # restore $a2 = n for last arrcpy call
 
 merge_end:
     jal     arrcpy              # call arrcpy
