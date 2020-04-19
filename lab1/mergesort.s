@@ -92,7 +92,8 @@ read_loop_cond:
 	move	$a0, $s2			# set up the argument for sbrk, number of bytes needed
 	syscall
 	move    $a2, $v0            # the addr of allocated memory for temp_array
-	move	$a1, $s2			# move array_size into a1
+	move	$a1, $s1			# move num of elems into a1
+    move    $a0, $s0            # addr of start of array nums
 	jal		mergesort
 
     # You must use a syscall to allocate
@@ -148,7 +149,7 @@ mergesort_skip:
 	addiu	$fp, $sp, 28
 	sw		$s0, 20($sp)		# end callee setup
 	sw		$a0, 16($sp)		# start recursive caller setup
-	sw		$a1, 12$sp)
+	sw		$a1, 12($sp)
 	sw		$a2, 8($sp)
 	sw 		$a3, 4($sp)
     sw		$s2, 0($sp) 		# end recursive caller setup
@@ -157,12 +158,14 @@ mergesort_skip:
 	srl		$a1, $a1, 1			# mid = n/2
 	jal		mergesort			# a0 = array, a1 = mid, a2 = temp_array
 
-	addu	$a0, $a0, $a1		# array + mid
 	move	$a3, $a1			# $a3 = mid
-	sub		$a1, $s0, $a1		# $a1 = n - mid
-	jal		mergesort			# a0 = array + mid, a1 = n - mid, a2 = temp_array
+    sll     $a1, $a1, 2         # mid*4
+    addu	$a0, $a0, $a1		# array + mid*4
+	sub		$a1, $s0, $a3		# $a1 = n - mid
+	jal		mergesort			# a0 = array + mid*$, a1 = n - mid, a2 = temp_array
 	
-	sub		$a0, $a0, $a3		# a0 = array + mid - mid
+	sll     $a1, $a3, 2         # mid*4
+    sub		$a0, $a0, $a1		# a0 = (array + mid*4) - mid*4
 	move	$a1, $s0			# a1 = n
 	jal		merge
 	
@@ -184,7 +187,7 @@ merge:
 	addiu	$fp, $sp, 28
 	sw		$s0, 20($sp)		# end callee setup
 	sw		$a0, 16($sp)		# start recursive caller setup
-	sw		$a1, 12$sp)
+	sw		$a1, 12($sp)
 	sw		$a2, 8($sp)
 	sw 		$a3, 4($sp)			# end recursive caller setup
 
@@ -192,7 +195,8 @@ merge:
     add     $t1, $zero, $zero   # lpos = $t1 = 0
     add     $t2, $zero, $zero   # rpos = $t2 = 0
     sub     $t3, $a1, $a3       # rn = $t3 = n - mid
-    add     $t4, $a0, $a3       # *rarr = $t4 = array + mid
+    sll     $t4, $a3, 2         # mid*4
+    add     $t4, $a0, $t4       # *rarr = $t4 = array + mid*4
     j		merge_while_cond	# jump to merge_while_cond
 
 merge_while_loop:
@@ -200,8 +204,10 @@ merge_while_loop:
     sll     $t9, $t2, 2             # $t9 = rpos * 4
     add     $t8, $a0, $t8           # &(array[lpos])
     add     $t9, $t4, $t9           # &(rarr[rpos])
-    lw      $t8, 0($t8)             # array[lpos] = $a0[$t1]
-    lw      $t9, 0($t9)             # rarr[rpos] = $t4[$t2]
+    lw      $s7, 0($t8)             # array[lpos] = $a0[$t1]
+    move    $t8, $s7
+    lw      $s7, 0($t9)             # rarr[rpos] = $t4[$t2]
+    move    $t9, $s7
     slt     $s7, $t8, $t9           # $s7 = ($t8 < $t9) = (array[lpos] < rarr[rpos])
     beq     $s7, $zero, merge_else  # if ($t8 < $t9), go to merge_else
     sll     $s7, $t0, 2             # $s7 = tpos * 4
@@ -211,7 +217,7 @@ merge_while_loop:
     addi    $t1, $t1, 1             # lpos++
     j		merge_while_cond		# jump to merge_while_cond
 
-merge else:
+merge_else:
     sll     $s7, $t0, 2             # $s7 = tpos * 4
     add     $s7, $a2, $s7           # &(temp_array[tpos]) = &($a2[$t0])
     sw      $t9, 0($s7)             # temp_array[tpos] = rarr[rpos], $a2[$t0] = $t4[$t2]
@@ -249,16 +255,13 @@ merge_if_rpos:
     jal     arrcpy                          # call arrcpy
 
 merge_end:
-    move    $t0, $a1
-    move    $a1, $a2
-    move    $a2, $t0
     jal     arrcpy              # call arrcpy
 
     lw		$a0, 16($sp)		# start recursive caller teardown
 	lw		$a1, 12($sp)
 	lw		$a2, 8($sp)
 	lw		$a3, 4($sp)			# end recursive caller teardown
-	lw		$s0, 20($20)		# start callee teardown
+	lw		$s0, 20($sp)		# start callee teardown
 	lw		$fp, 24($sp)
 	lw      $ra, 28($sp)		# end callee teardown
     addiu   $sp, $sp, 32
@@ -271,7 +274,8 @@ arrcpy:
 arrcpy_loop:    
     sll     $t1, $t0, 2         # $t1 = i*4
     add     $t1, $a1, $t1       # &(src[i])
-    lw      $t1, 0($t1)         # src[i]
+    lw      $t2, 0($t1)         # src[i]
+    move    $t1, $t2
     sll     $t2, $t0, 2         # $t2 = i*4
     add     $t2, $a0, $t2       # &(dst[i])
     sw      $t1, 0($t2)         # dst[i] = src[i]
