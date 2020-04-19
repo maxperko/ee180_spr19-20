@@ -20,5 +20,25 @@ thirty-two bytes of stack space, per the lecture slide conventions, and
 made clever use of all temporary ($t0-t9) registers prior to digging into
 callee-saved regs (e.g. $s0-s7).
 
+Routine-wise, the basic block between the 'Main' label and the 'read_loop'
+label was halfway implemented when we began and entails the syscalls
+necessary for user I/O and console prompts.  Ensuring the correct syscall
+codes were used, and keeping track of which registers their return values
+were stored in, was the hardest part of this block.  This is, essentially,
+just allocating dynamic memory for use in the mergesort routine that follows.
+Beginning on line 97 of the mergesort.s-file, we jump-and-link (jal) to 
+our mergesort label (mergesort.s:140).  
 
+Per convention, we chose to optimize the conditional check at the start
+of the mergesort routine by calling store-less-than-immediate (slti 2)
+performing a conditional branch (beq) into the mergesort_skip (block body)
+if the number of user-input elements is < 2.  If n >= 2, we enter the 
+mergesort body.  Within mergesort, we ensure all callee-saved registers
+are appropriately preserved by storing 32-bytes on the stack before
+adjusting any parameter registers.
 
+Simple logical shifts leftward and rightward achieved all of the necessary
+multiplication and division throughout the routine, including byte-alignment
+for integer pointer arithmetic.  The most difficult part of this section
+was ensuring proper use of the stack and preservation of callee-saved data
+throughout the recursive calls to the mergesort routine itself.
