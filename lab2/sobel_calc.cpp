@@ -1,5 +1,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "sobel_alg.h"
+#include "arm_neon.h"
 using namespace cv;
 
 /*******************************************
@@ -10,16 +11,20 @@ using namespace cv;
  ********************************************/
 void grayScale(Mat& img, Mat& img_gray_out)
 {
-  double color;
-
-  // Convert to grayscale
-  for (int i=0; i<img.rows; i++) {
-    for (int j=0; j<img.cols; j++) {
-      color = .114*img.data[STEP0*i + STEP1*j] +
-              .587*img.data[STEP0*i + STEP1*j + 1] +
-              .299*img.data[STEP0*i + STEP1*j + 2];
-      img_gray_out.data[IMG_WIDTH*i + j] = color;
-    }
+  int num8x16 = IMG_HEIGHT*IMG_WIDTH/16;
+  uint8x16x3_t intlv_rgb;
+  uint8x16_t temp_r, temp_g, temp_b, temp_x, temp_y;
+  for (int i=0; i < num8x16; i++) {
+    intlv_rgb = vld3q_u8(img.data + 3*16*i);
+    temp_b = intlv_rgb.val[0];
+    temp_g = intlv_rgb.val[1];
+    temp_r = intlv_rgb.val[2];
+    temp_b = vshrq_n_u8(temp_b, 3);
+    temp_g = vshrq_n_u8(temp_g, 1);
+    temp_r = vshrq_n_u8(temp_r, 2);
+    temp_x = vaddq_u8(temp_b, temp_g);
+    temp_y = vaddq_u8(temp_x, temp_r);
+    vst1q_u8(img_gray_out.data + 16*i, temp_y);
   }
 }
 
