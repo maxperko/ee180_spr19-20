@@ -54,10 +54,10 @@ void *runSobelMT(void *ptr)
 
   // For now, we just kill the second thread. It's up to you to get it to compute
   // the other half of the image.
-  if (myID != thread0_id) {
-    pthread_barrier_wait(&endSobel);
-    return NULL;
-  }
+  // if (myID != thread0_id) {
+  //   pthread_barrier_wait(&endSobel);
+  //   return NULL;
+  // }
 
   pc_init(&perf_counters, 0);
 
@@ -90,23 +90,56 @@ void *runSobelMT(void *ptr)
     sobel_l1cm = perf_counters.l1_misses.count;
     sobel_ic = perf_counters.ic.count;
 
+    // Start thread control
     // LAB 2, PART 2: Start parallel section
-    pc_start(&perf_counters);
-    grayScale(src, img_gray);
-    pc_stop(&perf_counters);
 
-    gray_time = perf_counters.cycles.count;
-    sobel_l1cm += perf_counters.l1_misses.count;
-    sobel_ic += perf_counters.ic.count;
+    Mat src_top, src_bot, top_gray, bot_gray, top_sobel, bot_sobel = Mat(IMG_HEIGHT/2, IMG_WIDTH, CV_8UC1);
+    src_top.data = src.data;
+    src_bot.data = src.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
+    top_gray.data = img_gray.data;
+    bot_gray.data = img_gray.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
+    top_sobel.data = img_sobel.data;
+    bot_sobel.data = img_sobel.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
 
-    pc_start(&perf_counters);
-    sobelCalc(img_gray, img_sobel);
-    pc_stop(&perf_counters);
+    if (thread0_id == myID) {
+      pc_start(&perf_counters);
+      grayScale(src_top, top_gray);
+      pc_stop(&perf_counters);
 
-    sobel_time = perf_counters.cycles.count;
-    sobel_l1cm += perf_counters.l1_misses.count;
-    sobel_ic += perf_counters.ic.count;
+      gray_time = perf_counters.cycles.count;
+      sobel_l1cm += perf_counters.l1_misses.count;
+      sobel_ic += perf_counters.ic.count;
+
+      pc_start(&perf_counters);
+      sobelCalc(top_gray, top_sobel);
+      pc_stop(&perf_counters);
+
+      sobel_time = perf_counters.cycles.count;
+      sobel_l1cm += perf_counters.l1_misses.count;
+      sobel_ic += perf_counters.ic.count;
+
+    } else {
+
+      pc_start(&perf_counters);
+      grayScale(src_bot, bot_gray);
+      pc_stop(&perf_counters);
+
+      gray_time = perf_counters.cycles.count;
+      sobel_l1cm += perf_counters.l1_misses.count;
+      sobel_ic += perf_counters.ic.count;
+
+      pc_start(&perf_counters);
+      sobelCalc(bot_gray, bot_sobel);
+      pc_stop(&perf_counters);
+
+      sobel_time = perf_counters.cycles.count;
+      sobel_l1cm += perf_counters.l1_misses.count;
+      sobel_ic += perf_counters.ic.count;
+
+    }
+
     // LAB 2, PART 2: End parallel section
+    // End thread control
 
     pc_start(&perf_counters);
     namedWindow(top, CV_WINDOW_AUTOSIZE);

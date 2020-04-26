@@ -11,7 +11,7 @@ using namespace cv;
  ********************************************/
 void grayScale(Mat& img, Mat& img_gray_out)
 {
-  int num8x16 = IMG_HEIGHT*IMG_WIDTH/16;
+  int num8x16 = img.rows * img.cols / 16;
   uint8x16x3_t intlv_rgb;
   uint8x16_t temp_r, temp_g, temp_b, temp_x, temp_y;
   for (int i=0; i < num8x16; i++) {
@@ -39,46 +39,49 @@ void grayScale(Mat& img, Mat& img_gray_out)
  ********************************************/
 void sobelCalc(Mat& img_gray, Mat& img_sobel_out)
 {
-  Mat img_outx = img_gray.clone();
-  Mat img_outy = img_gray.clone();
+  uint16_t rows = img_gray.rows;
+  uint16_t cols = img_gray.cols;
+  Mat img_outx = Mat(rows, cols, CV_8UC1);
+  Mat img_outy = Mat(rows, cols, CV_8UC1);
 
   // Apply Sobel filter to black & white image
   unsigned short sobel;
 
+  uchar* local_dat = img_gray.data;
+
   // Calculate the x convolution
-  for (int i=1; i<img_gray.rows; i++) {
-    for (int j=1; j<img_gray.cols; j++) {
-      sobel = abs(img_gray.data[IMG_WIDTH*(i-1) + (j-1)] -
-		  img_gray.data[IMG_WIDTH*(i+1) + (j-1)] +
-		  2*img_gray.data[IMG_WIDTH*(i-1) + (j)] -
-		  2*img_gray.data[IMG_WIDTH*(i+1) + (j)] +
-		  img_gray.data[IMG_WIDTH*(i-1) + (j+1)] -
-		  img_gray.data[IMG_WIDTH*(i+1) + (j+1)]);
+  for (int i=1; i<rows; i++) {
+    for (int j=1; j<cols; j++) {
+      sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+		  local_dat[IMG_WIDTH*(i+1) + (j-1)] +
+		  2*local_dat[IMG_WIDTH*(i-1) + (j)] -
+		  2*local_dat[IMG_WIDTH*(i+1) + (j)] +
+		  local_dat[IMG_WIDTH*(i-1) + (j+1)] -
+		  local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
       sobel = (sobel > 255) ? 255 : sobel;
       img_outx.data[IMG_WIDTH*(i) + (j)] = sobel;
     }
   }
-
+  
   // Calc the y convolution
-  for (int i=1; i<img_gray.rows; i++) {
-    for (int j=1; j<img_gray.cols; j++) {
-     sobel = abs(img_gray.data[IMG_WIDTH*(i-1) + (j-1)] -
-		   img_gray.data[IMG_WIDTH*(i-1) + (j+1)] +
-		   2*img_gray.data[IMG_WIDTH*(i) + (j-1)] -
-		   2*img_gray.data[IMG_WIDTH*(i) + (j+1)] +
-		   img_gray.data[IMG_WIDTH*(i+1) + (j-1)] -
-		   img_gray.data[IMG_WIDTH*(i+1) + (j+1)]);
+  for (int i=1; i<rows; i++) {
+    for (int j=1; j<cols; j++) {
+     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+		   local_dat[IMG_WIDTH*(i-1) + (j+1)] +
+		   2*local_dat[IMG_WIDTH*(i) + (j-1)] -
+		   2*local_dat[IMG_WIDTH*(i) + (j+1)] +
+		   local_dat[IMG_WIDTH*(i+1) + (j-1)] -
+		   local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
      sobel = (sobel > 255) ? 255 : sobel;
-
      img_outy.data[IMG_WIDTH*(i) + j] = sobel;
     }
   }
 
   // Combine the two convolutions into the output image
-  for (int i=1; i<img_gray.rows; i++) {
-    for (int j=1; j<img_gray.cols; j++) {
+  for (int i=1; i<rows; i++) {
+    for (int j=1; j<cols; j++) {
       sobel = img_outx.data[IMG_WIDTH*(i) + j] +
 	img_outy.data[IMG_WIDTH*(i) + j];
       sobel = (sobel > 255) ? 255 : sobel;
