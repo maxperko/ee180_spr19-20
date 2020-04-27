@@ -54,10 +54,10 @@ void *runSobelMT(void *ptr)
 
   // For now, we just kill the second thread. It's up to you to get it to compute
   // the other half of the image.
-  // if (myID != thread0_id) {
-  //   pthread_barrier_wait(&endSobel);
-  //   return NULL;
-  // }
+  if (myID != thread0_id) {
+    pthread_barrier_wait(&endSobel);
+    return NULL;
+  }
 
   pc_init(&perf_counters, 0);
 
@@ -90,19 +90,18 @@ void *runSobelMT(void *ptr)
     sobel_l1cm = perf_counters.l1_misses.count;
     sobel_ic = perf_counters.ic.count;
 
-    // LAB 2, PART 2: Start parallel section
-    Mat src_top, src_bot, top_gray, bot_gray, top_sobel, bot_sobel = Mat(IMG_HEIGHT/2, IMG_WIDTH, CV_8UC1);
-    src_top.data = src.data;
-    src_bot.data = src.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
+    Mat top_src, bot_src, top_gray, bot_gray, top_sobel, bot_sobel = Mat(IMG_HEIGHT/2, IMG_WIDTH, CV_8UC1);
+    top_src.data = src.data;
+    bot_src.data = src.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
     top_gray.data = img_gray.data;
-    bot_gray.data = img_gray.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
+    bot_gray.data = img_gray.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
     top_sobel.data = img_sobel.data;
-    bot_sobel.data = img_sobel.data + (IMG_HEIGHT * IMG_WIDTH * 3 << 1);
+    bot_sobel.data = img_sobel.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
 
-    // Start thread control
+    // LAB 2, PART 2: Start parallel section
     if (thread0_id == myID) {
       pc_start(&perf_counters);
-      grayScale(src_top, top_gray);
+      grayScale(top_src, top_gray);
       pc_stop(&perf_counters);
 
       gray_time = perf_counters.cycles.count;
@@ -116,11 +115,9 @@ void *runSobelMT(void *ptr)
       sobel_time = perf_counters.cycles.count;
       sobel_l1cm += perf_counters.l1_misses.count;
       sobel_ic += perf_counters.ic.count;
-
     } else {
-
       pc_start(&perf_counters);
-      grayScale(src_bot, bot_gray);
+      grayScale(bot_src, bot_gray);
       pc_stop(&perf_counters);
 
       gray_time = perf_counters.cycles.count;
@@ -135,11 +132,10 @@ void *runSobelMT(void *ptr)
       sobel_l1cm += perf_counters.l1_misses.count;
       sobel_ic += perf_counters.ic.count;
 
+      pthread_barrier_wait(&endSobel);
+      return NULL;
     }
     // LAB 2, PART 2: End parallel section
-
-    // End thread control
-    pthread_barrier_wait(&endSobel);
 
     pc_start(&perf_counters);
     namedWindow(top, CV_WINDOW_AUTOSIZE);
@@ -189,5 +185,6 @@ void *runSobelMT(void *ptr)
 
   cvReleaseCapture(&video_cap);
   results_file.close();
+  pthread_barrier_wait(&endSobel);
   return NULL;
 }
