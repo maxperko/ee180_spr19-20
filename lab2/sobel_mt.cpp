@@ -45,17 +45,31 @@ void *runSobelMT(void *ptr)
 
   // Allow the threads to contest for thread0 (controller thread) status
   pthread_mutex_lock(&thread0);
-
   // Check to see if this thread is first to this part of the code
   if (thread0_id == 0) {
     thread0_id = myID;
   }
   pthread_mutex_unlock(&thread0);
 
-  // For now, we just kill the second thread. It's up to you to get it to compute
-  // the other half of the image.
+  // Keep track of the frames
+  int i = 0;
   if (myID != thread0_id) {
-    pthread_barrier_wait(&endSobel);
+    while (1) {
+      pthread_barrier_wait(&endSobel);  // Barrier hit 1
+      grayScale(src, img_gray, 1, 0);
+      pthread_barrier_wait(&endSobel);  // Barrier hit 2
+      sobelCalc(img_gray, img_sobel, 1, 0);
+      pthread_barrier_wait(&endSobel);  // Barrier hit 3
+      i++;
+
+      pthread_barrier_wait(&endSobel);  // Barrier hit 4
+      // Press q to exit
+      char c = cvWaitKey(10);
+      if (c == 'q' || i >= opts.numFrames) {
+        break;
+      }
+    }
+    pthread_barrier_wait(&endSobel);  // Final barrier hit
     return NULL;
   }
 
@@ -74,9 +88,6 @@ void *runSobelMT(void *ptr)
   cvSetCaptureProperty(video_cap, CV_CAP_PROP_FRAME_WIDTH, IMG_WIDTH);
   cvSetCaptureProperty(video_cap, CV_CAP_PROP_FRAME_HEIGHT, IMG_HEIGHT);
 
-  // Keep track of the frames
-  int i = 0;
-
   while (1) {
     // Allocate memory to hold grayscale and sobel images
     img_gray = Mat(IMG_HEIGHT, IMG_WIDTH, CV_8UC1);
@@ -90,52 +101,24 @@ void *runSobelMT(void *ptr)
     sobel_l1cm = perf_counters.l1_misses.count;
     sobel_ic = perf_counters.ic.count;
 
-    Mat top_src, bot_src, top_gray, bot_gray, top_sobel, bot_sobel = Mat(IMG_HEIGHT/2, IMG_WIDTH, CV_8UC1);
-    top_src.data = src.data;
-    bot_src.data = src.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
-    top_gray.data = img_gray.data;
-    bot_gray.data = img_gray.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
-    top_sobel.data = img_sobel.data;
-    bot_sobel.data = img_sobel.data + ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
+    pc_start(&perf_counters);
+    pthread_barrier_wait(&endSobel);  // Barrier hit 1
+    grayScale(src, img_gray, 1, 1);
+    pc_stop(&perf_counters);
 
-    // LAB 2, PART 2: Start parallel section
-    if (thread0_id == myID) {
-      pc_start(&perf_counters);
-      grayScale(top_src, top_gray);
-      pc_stop(&perf_counters);
+    gray_time = perf_counters.cycles.count;
+    sobel_l1cm += perf_counters.l1_misses.count;
+    sobel_ic += perf_counters.ic.count;
 
-      gray_time = perf_counters.cycles.count;
-      sobel_l1cm += perf_counters.l1_misses.count;
-      sobel_ic += perf_counters.ic.count;
+    pc_start(&perf_counters);
+    pthread_barrier_wait(&endSobel);  // Barrier hit 2
+    sobelCalc(img_gray, img_sobel, 1, 1);
+    pthread_barrier_wait(&endSobel);  // Barrier hit 3
+    pc_stop(&perf_counters);
 
-      pc_start(&perf_counters);
-      sobelCalc(top_gray, top_sobel);
-      pc_stop(&perf_counters);
-
-      sobel_time = perf_counters.cycles.count;
-      sobel_l1cm += perf_counters.l1_misses.count;
-      sobel_ic += perf_counters.ic.count;
-    } else {
-      pc_start(&perf_counters);
-      grayScale(bot_src, bot_gray);
-      pc_stop(&perf_counters);
-
-      gray_time = perf_counters.cycles.count;
-      sobel_l1cm += perf_counters.l1_misses.count;
-      sobel_ic += perf_counters.ic.count;
-
-      pc_start(&perf_counters);
-      sobelCalc(bot_gray, bot_sobel);
-      pc_stop(&perf_counters);
-
-      sobel_time = perf_counters.cycles.count;
-      sobel_l1cm += perf_counters.l1_misses.count;
-      sobel_ic += perf_counters.ic.count;
-
-      pthread_barrier_wait(&endSobel);
-      return NULL;
-    }
-    // LAB 2, PART 2: End parallel section
+    sobel_time = perf_counters.cycles.count;
+    sobel_l1cm += perf_counters.l1_misses.count;
+    sobel_ic += perf_counters.ic.count;
 
     pc_start(&perf_counters);
     namedWindow(top, CV_WINDOW_AUTOSIZE);
@@ -156,6 +139,7 @@ void *runSobelMT(void *ptr)
     total_ipc += float(sobel_ic/float(cap_time + disp_time + gray_time + sobel_time));
     i++;
 
+    pthread_barrier_wait(&endSobel);  // Barrier hit 4
     // Press q to exit
     char c = cvWaitKey(10);
     if (c == 'q' || i >= opts.numFrames) {
@@ -185,6 +169,6 @@ void *runSobelMT(void *ptr)
 
   cvReleaseCapture(&video_cap);
   results_file.close();
-  pthread_barrier_wait(&endSobel);
+  pthread_barrier_wait(&endSobel);  // Final barrier hit
   return NULL;
 }

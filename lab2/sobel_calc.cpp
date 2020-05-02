@@ -9,13 +9,29 @@ using namespace cv;
  * Output: None directly. Modifies a ref parameter img_gray_out
  * Desc: This module converts the image to grayscale
  ********************************************/
-void grayScale(Mat& img, Mat& img_gray_out)
+void grayScale(Mat& img, Mat& img_gray_out, int div, int half)
 {
-  int num8x16 = img.rows * img.cols / 16;
+  // div == 1 --> Multithread Division
+  uint16_t rows;
+  int offset;
+
+  if (div == 1) {
+    if (half == 1) {
+      offset = ((IMG_HEIGHT * IMG_WIDTH * 3) / 2);
+    } else {
+      offset = 0;
+    }
+    rows = img.rows/2;  
+  } else {
+    offset = 0;
+    rows = img.rows;
+  }
+
+  int num8x16 = rows * img.cols / 16;
   uint8x16x3_t intlv_rgb;
   uint8x16_t temp_r, temp_g, temp_b, temp_x, temp_y;
   for (int i=0; i < num8x16; i++) {
-    intlv_rgb = vld3q_u8(img.data + 3*16*i);
+    intlv_rgb = vld3q_u8(img.data + 3*16*i + offset);
     temp_b = intlv_rgb.val[0];
     temp_g = intlv_rgb.val[1];
     temp_r = intlv_rgb.val[2];
@@ -24,7 +40,7 @@ void grayScale(Mat& img, Mat& img_gray_out)
     temp_r = vshrq_n_u8(temp_r, 2);
     temp_x = vaddq_u8(temp_b, temp_g);
     temp_y = vaddq_u8(temp_x, temp_r);
-    vst1q_u8(img_gray_out.data + 16*i, temp_y);
+    vst1q_u8(img_gray_out.data + 16*i + offset/3, temp_y);
   }
 }
 
@@ -37,55 +53,88 @@ void grayScale(Mat& img, Mat& img_gray_out)
  *  direction, calculates the gradient in the y direction and sum it with Gx
  *  to finish the Sobel calculation
  ********************************************/
-void sobelCalc(Mat& img_gray, Mat& img_sobel_out)
+void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half)
 {
-  uint16_t rows = img_gray.rows;
-  uint16_t cols = img_gray.cols;
-  Mat img_outx = Mat(rows, cols, CV_8UC1);
-  Mat img_outy = Mat(rows, cols, CV_8UC1);
+  Mat img_outw, img_outx, img_outy, img_outz;
+  // div == 1 --> Multithread Division
+  uint16_t rows, cols;
+  int offset;
 
+  if (div == 1) {
+    rows = img_gray.rows/2;  
+    if (half == 1) {
+      offset = rows;
+    } else {
+      offset = 0;
+    }
+  } else {
+    offset = 0;
+    rows = img_gray.rows;
+  }
+  cols = img_gray.cols;
+
+  if (half == 0) {
+    Mat img_outw = Mat(rows, cols, CV_8UC1);
+    Mat img_outx = Mat(rows, cols, CV_8UC1);
+  } else {
+    Mat img_outy = Mat(rows, cols, CV_8UC1);
+    Mat img_outz = Mat(rows, cols, CV_8UC1);
+  }
   // Apply Sobel filter to black & white image
   unsigned short sobel;
 
   uchar* local_dat = img_gray.data;
 
-  // Calculate the x convolution
-  for (int i=1; i<rows; i++) {
-    for (int j=1; j<cols; j++) {
-      sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
-		  local_dat[IMG_WIDTH*(i+1) + (j-1)] +
-		  2*local_dat[IMG_WIDTH*(i-1) + (j)] -
-		  2*local_dat[IMG_WIDTH*(i+1) + (j)] +
-		  local_dat[IMG_WIDTH*(i-1) + (j+1)] -
-		  local_dat[IMG_WIDTH*(i+1) + (j+1)]);
+  //Calculate the x convolution
+  // for (int i=(1 + offset); i<(rows + offset); i++) {
+  //   for (int j=1; j<cols; j++) {
+  //     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+	// 	  local_dat[IMG_WIDTH*(i+1) + (j-1)] +
+	// 	  2*local_dat[IMG_WIDTH*(i-1) + (j)] -
+	// 	  2*local_dat[IMG_WIDTH*(i+1) + (j)] +
+	// 	  local_dat[IMG_WIDTH*(i-1) + (j+1)] -
+	// 	  local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
-      sobel = (sobel > 255) ? 255 : sobel;
-      img_outx.data[IMG_WIDTH*(i) + (j)] = sobel;
-    }
-  }
+  //     sobel = (sobel > 255) ? 255 : sobel;
+  //     if (half == 0) {
+  //       img_outw.data[IMG_WIDTH*(i-offset) + (j)] = sobel;
+  //     } else {
+  //       img_outy.data[IMG_WIDTH*(i-offset) + (j)] = sobel;
+  //     }
+  //   }
+  // }
   
-  // Calc the y convolution
-  for (int i=1; i<rows; i++) {
-    for (int j=1; j<cols; j++) {
-     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
-		   local_dat[IMG_WIDTH*(i-1) + (j+1)] +
-		   2*local_dat[IMG_WIDTH*(i) + (j-1)] -
-		   2*local_dat[IMG_WIDTH*(i) + (j+1)] +
-		   local_dat[IMG_WIDTH*(i+1) + (j-1)] -
-		   local_dat[IMG_WIDTH*(i+1) + (j+1)]);
+  // //Calc the y convolution
+  // for (int i=(1 + offset); i<(rows + offset); i++) {
+  //   for (int j=1; j<cols; j++) {
+  //     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+  //     local_dat[IMG_WIDTH*(i-1) + (j+1)] +
+  //     2*local_dat[IMG_WIDTH*(i) + (j-1)] -
+  //     2*local_dat[IMG_WIDTH*(i) + (j+1)] +
+  //     local_dat[IMG_WIDTH*(i+1) + (j-1)] -
+  //     local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
-     sobel = (sobel > 255) ? 255 : sobel;
-     img_outy.data[IMG_WIDTH*(i) + j] = sobel;
-    }
-  }
+  //     sobel = (sobel > 255) ? 255 : sobel;
+  //     if (half == 0) {
+  //       img_outx.data[IMG_WIDTH*(i-offset) + j] = sobel;
+  //     } else {
+  //       img_outz.data[IMG_WIDTH*(i-offset) + j] = sobel;
+  //     }
+  //   }
+  // }
 
   // Combine the two convolutions into the output image
-  for (int i=1; i<rows; i++) {
-    for (int j=1; j<cols; j++) {
-      sobel = img_outx.data[IMG_WIDTH*(i) + j] +
-	img_outy.data[IMG_WIDTH*(i) + j];
-      sobel = (sobel > 255) ? 255 : sobel;
-      img_sobel_out.data[IMG_WIDTH*(i) + j] = sobel;
-    }
-  }
+  // for (int i=(1 + offset); i<(rows + offset); i++) {
+  //   for (int j=1; j<cols; j++) {
+  //     if (half == 0) {
+  //       sobel = img_outw.data[IMG_WIDTH*(i-offset) + j] +
+	//               img_outx.data[IMG_WIDTH*(i-offset) + j];
+  //     } else {
+  //       sobel = img_outy.data[IMG_WIDTH*(i-offset) + j] +
+	//               img_outz.data[IMG_WIDTH*(i-offset) + j];
+  //     }
+  //     sobel = (sobel > 255) ? 255 : sobel;
+  //     img_sobel_out.data[IMG_WIDTH*(i) + j] = sobel;
+  //   }
+  // }
 }
