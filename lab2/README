@@ -1,0 +1,45 @@
+Lab 2 README
+Group members: Max Perko, Nikhil Hira
+Board host name: ee180-6z.stanford.edu
+-----------------------------------------------
+
+Order of improvement:
+
+PART 1 - Vectorization:
+
+    1. Vectorized grayscale implementation using neon intrinsics, operating on 16 8-bit operands.
+        This increased FPS from 5 to 7 (not too much), but also reduced time per function for 
+        grayscale from ~25% to ~7% and also reduced total energy spent.
+    2. Tried -Ofast and -O3 flags during compilation. -O3 resulted in larger FPS improvement.
+        FPS improved from ~7 to ~33.
+
+PART 2 - Multi_Threading:
+
+    1. Used pointer referencing and arithmetic to avoid making multiple copies of source data.
+        Experienced some difficulty doing this, so we were not able to implement this totally.
+        We ended up modifying the function arguments to bring in defined Mats, ints and pointers
+        so that each thread was able to access/modif data without issue.
+    2. Used several barriers to sync up the threads at key points.
+    3. Had to change a couple of "thread local" variable to static variables in order for 
+        both threads to access the correct data, and to facilitate the q key exit functionality.
+
+------------------------------------------------
+FINAL PERFORMANCE ouput:
+------------------------------------------------
+Percent of time per function
+Capture, 29.6937%
+Grayscale, 6.76116%
+Sobel, 49.7047%
+Display, 13.8404%
+
+Summary
+Frames per second, 55.1494
+Cycles per frame, 1.59833e+07
+Energy per frames (mJ), 25.3856
+Total frames, 70
+
+Hardware Stats (Cap + Gray + Sobel + Display)
+Instructions per cycle, 1.02389
+L1 misses per frame, 119838
+L1 misses per instruction, 0.00738414
+Instruction count per frame, 1.62291e+07
