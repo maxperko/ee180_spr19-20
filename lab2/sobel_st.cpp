@@ -81,8 +81,12 @@ void runSobelST()
     sobel_l1cm += perf_counters.l1_misses.count;
     sobel_ic += perf_counters.ic.count;
 
+    Mat img_outx = Mat(img_gray.rows, img_gray.cols, CV_8UC1);
+    Mat img_outy = Mat(img_gray.rows, img_gray.cols, CV_8UC1);
+    uchar* local_dat = img_gray.data;
+
     pc_start(&perf_counters);
-    sobelCalc(img_gray, img_sobel, 0, 0);
+    sobelCalc(img_gray, img_sobel, 0, 0, img_outx, img_outy, local_dat);
     pc_stop(&perf_counters);
 
     sobel_time = perf_counters.cycles.count;

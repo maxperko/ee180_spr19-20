@@ -53,17 +53,18 @@ void grayScale(Mat& img, Mat& img_gray_out, int div, int half)
  *  direction, calculates the gradient in the y direction and sum it with Gx
  *  to finish the Sobel calculation
  ********************************************/
-void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half)
+void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half, Mat& img_outx, Mat& img_outy, uchar* local_dat)
 {
-  Mat img_outw, img_outx, img_outy, img_outz;
+  // Mat img_outw, img_outx, img_outy, img_outz;
   // div == 1 --> Multithread Division
   uint16_t rows, cols;
   int offset;
+  cols = img_gray.cols;
 
   if (div == 1) {
     rows = img_gray.rows/2;  
     if (half == 1) {
-      offset = rows;
+      offset = rows - 1;
     } else {
       offset = 0;
     }
@@ -71,70 +72,53 @@ void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half)
     offset = 0;
     rows = img_gray.rows;
   }
-  cols = img_gray.cols;
 
-  if (half == 0) {
-    Mat img_outw = Mat(rows, cols, CV_8UC1);
-    Mat img_outx = Mat(rows, cols, CV_8UC1);
-  } else {
-    Mat img_outy = Mat(rows, cols, CV_8UC1);
-    Mat img_outz = Mat(rows, cols, CV_8UC1);
-  }
+  // Mat img_outx = Mat(rows, cols, CV_8UC1);
+  // Mat img_outy = Mat(rows, cols, CV_8UC1);
+  
   // Apply Sobel filter to black & white image
   unsigned short sobel;
 
-  uchar* local_dat = img_gray.data;
+  //uchar* local_dat = img_gray.data;
 
-  //Calculate the x convolution
-  // for (int i=(1 + offset); i<(rows + offset); i++) {
-  //   for (int j=1; j<cols; j++) {
-  //     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
-	// 	  local_dat[IMG_WIDTH*(i+1) + (j-1)] +
-	// 	  2*local_dat[IMG_WIDTH*(i-1) + (j)] -
-	// 	  2*local_dat[IMG_WIDTH*(i+1) + (j)] +
-	// 	  local_dat[IMG_WIDTH*(i-1) + (j+1)] -
-	// 	  local_dat[IMG_WIDTH*(i+1) + (j+1)]);
+  //  Calculate the x convolution
+  for (int i=(1 + offset); i<(rows + offset); i++) {
+    for (int j=1; j<cols; j++) {
+      sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+		  local_dat[IMG_WIDTH*(i+1) + (j-1)] +
+		  2*local_dat[IMG_WIDTH*(i-1) + (j)] -
+		  2*local_dat[IMG_WIDTH*(i+1) + (j)] +
+		  local_dat[IMG_WIDTH*(i-1) + (j+1)] -
+		  local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
-  //     sobel = (sobel > 255) ? 255 : sobel;
-  //     if (half == 0) {
-  //       img_outw.data[IMG_WIDTH*(i-offset) + (j)] = sobel;
-  //     } else {
-  //       img_outy.data[IMG_WIDTH*(i-offset) + (j)] = sobel;
-  //     }
-  //   }
-  // }
+      sobel = (sobel > 255) ? 255 : sobel;
+      img_outx.data[IMG_WIDTH*(i-offset) + (j)] = sobel;
+    }
+  }
   
-  // //Calc the y convolution
-  // for (int i=(1 + offset); i<(rows + offset); i++) {
-  //   for (int j=1; j<cols; j++) {
-  //     sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
-  //     local_dat[IMG_WIDTH*(i-1) + (j+1)] +
-  //     2*local_dat[IMG_WIDTH*(i) + (j-1)] -
-  //     2*local_dat[IMG_WIDTH*(i) + (j+1)] +
-  //     local_dat[IMG_WIDTH*(i+1) + (j-1)] -
-  //     local_dat[IMG_WIDTH*(i+1) + (j+1)]);
+  // Calc the y convolution
+  for (int i=(1 + offset); i<(rows + offset); i++) {
+    for (int j=1; j<cols; j++) {
+      sobel = abs(local_dat[IMG_WIDTH*(i-1) + (j-1)] -
+      local_dat[IMG_WIDTH*(i-1) + (j+1)] +
+      2*local_dat[IMG_WIDTH*(i) + (j-1)] -
+      2*local_dat[IMG_WIDTH*(i) + (j+1)] +
+      local_dat[IMG_WIDTH*(i+1) + (j-1)] -
+      local_dat[IMG_WIDTH*(i+1) + (j+1)]);
 
-  //     sobel = (sobel > 255) ? 255 : sobel;
-  //     if (half == 0) {
-  //       img_outx.data[IMG_WIDTH*(i-offset) + j] = sobel;
-  //     } else {
-  //       img_outz.data[IMG_WIDTH*(i-offset) + j] = sobel;
-  //     }
-  //   }
-  // }
+      sobel = (sobel > 255) ? 255 : sobel;
+      img_outy.data[IMG_WIDTH*(i-offset) + j] = sobel;
+      
+    }
+  }
 
   // Combine the two convolutions into the output image
-  // for (int i=(1 + offset); i<(rows + offset); i++) {
-  //   for (int j=1; j<cols; j++) {
-  //     if (half == 0) {
-  //       sobel = img_outw.data[IMG_WIDTH*(i-offset) + j] +
-	//               img_outx.data[IMG_WIDTH*(i-offset) + j];
-  //     } else {
-  //       sobel = img_outy.data[IMG_WIDTH*(i-offset) + j] +
-	//               img_outz.data[IMG_WIDTH*(i-offset) + j];
-  //     }
-  //     sobel = (sobel > 255) ? 255 : sobel;
-  //     img_sobel_out.data[IMG_WIDTH*(i) + j] = sobel;
-  //   }
-  // }
+  for (int i=(1 + offset); i<(rows + offset); i++) {
+    for (int j=1; j<cols; j++) {
+      sobel = img_outx.data[IMG_WIDTH*(i-offset) + j] +
+	            img_outy.data[IMG_WIDTH*(i-offset) + j];
+      sobel = (sobel > 255) ? 255 : sobel;
+      img_sobel_out.data[IMG_WIDTH*(i) + j] = sobel;
+    }
+  }
 }

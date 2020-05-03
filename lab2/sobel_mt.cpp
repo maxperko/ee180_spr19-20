@@ -38,7 +38,7 @@ void *runSobelMT(void *ptr)
 {
   // Set up variables for computing Sobel
   string top = "Sobel Top";
-  Mat src;
+  static Mat src;
   uint64_t cap_time, gray_time, sobel_time, disp_time, sobel_l1cm, sobel_ic;
   pthread_t myID = pthread_self();
   counters_t perf_counters;
@@ -58,7 +58,10 @@ void *runSobelMT(void *ptr)
       pthread_barrier_wait(&endSobel);  // Barrier hit 1
       grayScale(src, img_gray, 1, 0);
       pthread_barrier_wait(&endSobel);  // Barrier hit 2
-      sobelCalc(img_gray, img_sobel, 1, 0);
+      Mat img_outx_1 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+      Mat img_outy_1 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+      uchar* local_dat_1 = img_gray.data;
+      sobelCalc(img_gray, img_sobel, 1, 0, img_outx_1, img_outy_1, local_dat_1);
       pthread_barrier_wait(&endSobel);  // Barrier hit 3
       i++;
 
@@ -112,7 +115,10 @@ void *runSobelMT(void *ptr)
 
     pc_start(&perf_counters);
     pthread_barrier_wait(&endSobel);  // Barrier hit 2
-    sobelCalc(img_gray, img_sobel, 1, 1);
+    Mat img_outx_0 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+    Mat img_outy_0 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+    uchar* local_dat_0 = img_gray.data;
+    sobelCalc(img_gray, img_sobel, 1, 1, img_outx_0, img_outy_0, local_dat_0);
     pthread_barrier_wait(&endSobel);  // Barrier hit 3
     pc_stop(&perf_counters);
 

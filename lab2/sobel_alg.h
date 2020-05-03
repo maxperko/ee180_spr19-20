@@ -39,7 +39,7 @@ struct opts {
 
 extern struct opts opts;
 
-void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half);
+void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half, Mat& img_outx, Mat& img_outy, uchar* local_dat);
 void grayScale(Mat& img, Mat& img_gray_out, int div, int half);
 
 void runSobelST();
