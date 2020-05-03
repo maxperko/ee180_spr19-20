@@ -39,6 +39,7 @@ void *runSobelMT(void *ptr)
   // Set up variables for computing Sobel
   string top = "Sobel Top";
   static Mat src;
+  static char c;
   uint64_t cap_time, gray_time, sobel_time, disp_time, sobel_l1cm, sobel_ic;
   pthread_t myID = pthread_self();
   counters_t perf_counters;
@@ -67,7 +68,7 @@ void *runSobelMT(void *ptr)
 
       pthread_barrier_wait(&endSobel);  // Barrier hit 4
       // Press q to exit
-      char c = cvWaitKey(10);
+      pthread_barrier_wait(&endSobel);  // Barrier hit 5
       if (c == 'q' || i >= opts.numFrames) {
         break;
       }
@@ -147,7 +148,8 @@ void *runSobelMT(void *ptr)
 
     pthread_barrier_wait(&endSobel);  // Barrier hit 4
     // Press q to exit
-    char c = cvWaitKey(10);
+    c = cvWaitKey(10);
+    pthread_barrier_wait(&endSobel);  // Barrier hit 5
     if (c == 'q' || i >= opts.numFrames) {
       break;
     }

@@ -55,7 +55,6 @@ void grayScale(Mat& img, Mat& img_gray_out, int div, int half)
  ********************************************/
 void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half, Mat& img_outx, Mat& img_outy, uchar* local_dat)
 {
-  // Mat img_outw, img_outx, img_outy, img_outz;
   // div == 1 --> Multithread Division
   uint16_t rows, cols;
   int offset;
@@ -72,14 +71,9 @@ void sobelCalc(Mat& img_gray, Mat& img_sobel_out, int div, int half, Mat& img_ou
     offset = 0;
     rows = img_gray.rows;
   }
-
-  // Mat img_outx = Mat(rows, cols, CV_8UC1);
-  // Mat img_outy = Mat(rows, cols, CV_8UC1);
   
   // Apply Sobel filter to black & white image
   unsigned short sobel;
-
-  //uchar* local_dat = img_gray.data;
 
   //  Calculate the x convolution
   for (int i=(1 + offset); i<(rows + offset); i++) {
