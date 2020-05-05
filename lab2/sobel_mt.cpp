@@ -59,10 +59,9 @@ void *runSobelMT(void *ptr)
       pthread_barrier_wait(&endSobel);  // Barrier hit 1
       grayScale(src, img_gray, 1, 0);
       pthread_barrier_wait(&endSobel);  // Barrier hit 2
-      Mat img_outx_1 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
-      Mat img_outy_1 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+      
       uchar* local_dat_1 = img_gray.data;
-      sobelCalc(img_gray, img_sobel, 1, 0, img_outx_1, img_outy_1, local_dat_1);
+      sobelCalc(img_gray, img_sobel, 1, 0, local_dat_1);
       pthread_barrier_wait(&endSobel);  // Barrier hit 3
       i++;
 
@@ -116,10 +115,9 @@ void *runSobelMT(void *ptr)
 
     pc_start(&perf_counters);
     pthread_barrier_wait(&endSobel);  // Barrier hit 2
-    Mat img_outx_0 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
-    Mat img_outy_0 = Mat(img_gray.rows/2, img_gray.cols, CV_8UC1);
+    
     uchar* local_dat_0 = img_gray.data;
-    sobelCalc(img_gray, img_sobel, 1, 1, img_outx_0, img_outy_0, local_dat_0);
+    sobelCalc(img_gray, img_sobel, 1, 1, local_dat_0);
     pthread_barrier_wait(&endSobel);  // Barrier hit 3
     pc_stop(&perf_counters);
 
@@ -143,7 +141,8 @@ void *runSobelMT(void *ptr)
     sobel_ic_total += sobel_ic;
     disp_total += disp_time;
     total_fps += PROC_FREQ/float(cap_time + disp_time + gray_time + sobel_time);
-    total_ipc += float(sobel_ic/float(cap_time + disp_time + gray_time + sobel_time));
+    total_ipc += float(2*sobel_ic/float(cap_time + disp_time + gray_time + sobel_time));
+    // doubled sobel_ic to include second thread instruction count per cycle
     i++;
 
     pthread_barrier_wait(&endSobel);  // Barrier hit 4

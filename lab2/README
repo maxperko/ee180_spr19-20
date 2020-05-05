@@ -1,19 +1,46 @@
 Lab 2 README
-Group members: Max Perko, Nikhil Hira
-Board host name: ee180-6z.stanford.edu
+Group 6A: Max Perko, Nikhil Hira
+Board host name: ee180-6az.stanford.edu
 -----------------------------------------------
 
 Order of improvement:
-
+----------------------------------------------------------------------------------------------------
 PART 1 - Vectorization:
+----------------------------------------------------------------------------------------------------
 
     1. Vectorized grayscale implementation using neon intrinsics, operating on 16 8-bit operands.
         This increased FPS from 5 to 7 (not too much), but also reduced time per function for 
         grayscale from ~25% to ~7% and also reduced total energy spent.
     2. Tried -Ofast and -O3 flags during compilation. -O3 resulted in larger FPS improvement.
         FPS improved from ~7 to ~33.
+    3. Went back and consolidated the loop over the whole data array.
+        Also combined the convolutions and summing into the same for loop.
+        FPS increased from ~33 to ~44.
 
+    ------------------------------------------------
+    Single Thread PERFORMANCE output:
+    ------------------------------------------------
+    Percent of time per function
+    Capture, 23.4988%
+    Grayscale, 9.75542%
+    Sobel, 55.6367%
+    Display, 11.1091%
+
+    Summary
+    Frames per second, 44.13
+    Cycles per frame, 1.98835e+07
+    Energy per frames (mJ), 31.7244
+    Total frames, 70
+
+    Hardware Stats (Cap + Gray + Sobel + Display)
+    Instructions per cycle, 0.974636
+    L1 misses per frame, 125761
+    L1 misses per instruction, 0.00652634
+    Instruction count per frame, 1.92697e+07
+
+----------------------------------------------------------------------------------------------------
 PART 2 - Multi_Threading:
+----------------------------------------------------------------------------------------------------
 
     1. Used pointer referencing and arithmetic to avoid making multiple copies of source data.
         Experienced some difficulty doing this, so we were not able to implement this totally.
@@ -22,24 +49,25 @@ PART 2 - Multi_Threading:
     2. Used several barriers to sync up the threads at key points.
     3. Had to change a couple of "thread local" variable to static variables in order for 
         both threads to access the correct data, and to facilitate the q key exit functionality.
+    FPS increased from ~44 to ~65
 
-------------------------------------------------
-FINAL PERFORMANCE ouput:
-------------------------------------------------
-Percent of time per function
-Capture, 29.6937%
-Grayscale, 6.76116%
-Sobel, 49.7047%
-Display, 13.8404%
+    ------------------------------------------------
+    FINAL PERFORMANCE ouput:
+    ------------------------------------------------
+    Percent of time per function
+    Capture, 34.6%
+    Grayscale, 7.80784%
+    Sobel, 41.29%
+    Display, 16.3022%
 
-Summary
-Frames per second, 55.1494
-Cycles per frame, 1.59833e+07
-Energy per frames (mJ), 25.3856
-Total frames, 70
+    Summary
+    Frames per second, 65.4595
+    Cycles per frame, 1.35213e+07
+    Energy per frames (mJ), 21.3873
+    Total frames, 70
 
-Hardware Stats (Cap + Gray + Sobel + Display)
-Instructions per cycle, 1.02389
-L1 misses per frame, 119838
-L1 misses per instruction, 0.00738414
-Instruction count per frame, 1.62291e+07
+    Hardware Stats (Cap + Gray + Sobel + Display)
+    Instructions per cycle, 1.87237
+    L1 misses per frame, 94420.2
+    L1 misses per instruction, 0.00752661
+    Instruction count per frame, 1.25449e+07
