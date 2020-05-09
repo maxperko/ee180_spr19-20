@@ -1,1 +1,11 @@
+---------------------------------------------------------------------------
+Project: EE 180 - Lab 3
+Authors: Max Perko & Nikhil Hira
+Group:	 6a
+Date:	 20200520
+---------------------------------------------------------------------------
 
+TO-DO:
+• List of instructions implemented
+• Description of changes made to the control and datapath to handle hazards and forwarding
+• (Extra credit only) Description of optimizations made to both software and hardware
