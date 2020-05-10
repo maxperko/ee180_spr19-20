@@ -195,4 +195,4 @@ module mips_cpu (
         .rt_data        (rt_data_id)
     );
 
-endmodule
+endmodule //mips_cpu

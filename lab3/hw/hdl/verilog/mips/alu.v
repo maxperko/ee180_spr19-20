@@ -62,4 +62,4 @@ module alu (
     assign alu_overflow = |{add_check & (add_pos_over | add_neg_over),
                             sub_check & (sub_pos_over | sub_neg_over)};
 
-endmodule
+endmodule //alu

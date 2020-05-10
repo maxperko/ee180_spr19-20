@@ -1,5 +1,4 @@
 // Some definitions for making MIPS instructions in irom.v or decoding them in decode.v.
-
 `define BLTZ_GEZ 6'b000001
 `define BEQ      6'b000100
 `define BNE      6'b000101
@@ -95,9 +94,7 @@
 
 `define NOP 32'b0 // same as sll $zero, $zero, 0
 
-
 // opcodes for the ALU
-
 `define ALU_ADDU 4'd0
 `define ALU_AND 4'd1
 `define ALU_XOR 4'd2
