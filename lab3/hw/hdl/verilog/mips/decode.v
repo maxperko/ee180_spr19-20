@@ -75,7 +75,6 @@ module decode (
     wire isBNE    = (op == `BNE);
     wire isBranchLink = (isBGEZAL | isBLTZAL);
 
-
 //******************************************************************************
 // jump instructions decode
 //******************************************************************************
@@ -234,4 +233,4 @@ module decode (
     assign jump_target = isJ;
     assign jump_reg = 1'b0;
 
-endmodule
+endmodule //decode
