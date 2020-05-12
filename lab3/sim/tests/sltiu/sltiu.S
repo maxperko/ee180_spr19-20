@@ -24,7 +24,7 @@ boot:
     nop
     sw      $t0, 4($s1)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
-
+    
 $done:
     j       $done
     nop
