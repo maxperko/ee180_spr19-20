@@ -46,8 +46,8 @@ module mips_cpu (
     wire mem_sc_id, mem_sc_ex;
     wire alu_overflow;
     wire stall, stall_r;
-    wire en_if = ~stall & en;
-    wire rst_id = stall & en;
+    wire en_if = ~stall & en;       // *Important to understand why these are set the way they are
+    wire rst_id = stall & en;       //
 
     instruction_fetch if_stage (
         .clk            (clk),
@@ -94,8 +94,6 @@ module mips_cpu (
         .reg_we             (reg_we_id),
         .movn               (movn_id),
         .movz               (movz_id),
-        .rs_addr            (rs_addr_id),
-        .rt_addr            (rt_addr_id),
         .atomic_id          (mem_atomic_id),
         .atomic_ex          (mem_atomic_ex),
         .mem_sc_mask_id     (mem_sc_mask_id),

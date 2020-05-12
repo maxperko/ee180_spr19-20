@@ -1,0 +1,28 @@
+###########################################################################
+# TO-DO:
+###########################################################################
+1. Implement:
+
+- btgz
+- jal
+- jalr
+- ll
+- movz
+- nor
+- or
+- sb
+- sc
+- sllv
+- slt
+- sltu
+- sw
+- xori
+
+2. Add correct hazard detection, fowarding, and stall control.
+	- Never use stale data in the presence of a RAW hazard
+	- Never stall unless it has to resolve a RAW hazard
+	- Create tests to demonstrate this works
+
+3. Run Sobel filter using implemented MIPS processor, zedboard, & webcam
+
+
