@@ -1,12 +1,12 @@
 ###############################################################################
-# File         : sltiu.S
+# File         : ori.S
 # Project      : EE180 Lab 2: MIPS
 #
 # Standards/Formatting:
 #   MIPS gas, soft tab, 80 column
 #
 # Description:
-#   Test the functionality of the 'sltiu' instruction.
+#   Test the functionality of the 'ori' instruction.
 #
 ###############################################################################
 
@@ -18,13 +18,15 @@
 boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
+    ori     $t0, $0, 1
     nop
-    sltiu   $t0, $s0, 0xffff
+    nop
+    or      $t1, $0, $t0          # Prepare the 'done' status
     nop
     nop
-    sw      $t0, 4($s1)         # Set the test result
+    sw      $t1, 4($s0)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
-    
+
 $done:
     j       $done
     nop

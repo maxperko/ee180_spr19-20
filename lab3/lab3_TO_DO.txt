@@ -4,7 +4,7 @@
 
 1. Implement:
 
-- btgz
+- bgtz
 - jal
 - jalr
 - ll
