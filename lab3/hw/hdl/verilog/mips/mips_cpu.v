@@ -94,6 +94,8 @@ module mips_cpu (
         .reg_we             (reg_we_id),
         .movn               (movn_id),
         .movz               (movz_id),
+	.rs_addr	    (rs_addr_id),
+	.rt_addr	    (rt_addr_is),
         .atomic_id          (mem_atomic_id),
         .atomic_ex          (mem_atomic_ex),
         .mem_sc_mask_id     (mem_sc_mask_id),
