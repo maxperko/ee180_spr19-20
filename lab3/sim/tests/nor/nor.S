@@ -18,10 +18,10 @@
 boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
-    ori     $t0, $0, 0
+    ori     $t0, $0, 0xFFFE
     nop
     nop
-    nor     $t1, $0, $t0        # nor(0,0) = 1
+    nor     $t1, $0, $t0        # nor(0,0xFFFE) = 1
     nop
     nop
     sw      $t1, 4($s0)         # Set the test result
