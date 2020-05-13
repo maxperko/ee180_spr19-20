@@ -128,7 +128,7 @@ module decode (
             {`SPECIAL, `SRLV}:  alu_opcode = `ALU_SRL;
 
             // added by us
-            {`SPECIAL, `XOR}:   alu_opcode = `ALU_OR;
+            {`SPECIAL, `XOR}:   alu_opcode = `ALU_XOR;
 
             // compare rs data to 0, only care about 1 operand
             {`BGTZ, `DC6}:      alu_opcode = `ALU_PASSX;
