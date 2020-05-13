@@ -129,6 +129,7 @@ module decode (
 
             // added by us
             {`SPECIAL, `XOR}:   alu_opcode = `ALU_XOR;
+            {`XORI, `DC6}:      alu_opcode = `ALU_XOR;
 
             // compare rs data to 0, only care about 1 operand
             {`BGTZ, `DC6}:      alu_opcode = `ALU_PASSX;
@@ -158,7 +159,7 @@ module decode (
     wire [31:0] imm_upper = {immediate, 16'b0};
     wire [31:0] imm_lower = {16'b0, immediate};
 
-    wire [31:0] imm = (op == `LUI) ? imm_upper : ((op == `ORI) ? imm_lower : imm_sign_extend);
+    wire [31:0] imm = (op == `LUI) ? imm_upper : ((op == `ORI) || (op == `XORI)) ? imm_lower : imm_sign_extend);
 
 //******************************************************************************
 // forwarding and stalling logic
