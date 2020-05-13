@@ -21,7 +21,7 @@ boot:
     lui     $t0, 0xFFFF
     nop
     nop
-    ori     $t0, $0, 0xFFFE
+    ori     $t0, $t0, 0xFFFE
     nop
     nop
     nor     $t1, $0, $t0        # nor(0,0xFFFE) = 1
