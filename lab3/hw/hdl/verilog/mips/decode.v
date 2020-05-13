@@ -155,7 +155,7 @@ module decode (
 // Compute value for 32 bit immediate data
 //******************************************************************************
 
-    wire use_imm = &{op != `SPECIAL, op != `SPECIAL2, op != `BNE, op != `BEQ}; // where to get 2nd ALU operand from: 0 for RtData, 1 for Immediate
+    wire use_imm = &{op != `SPECIAL, op != `SPECIAL2, op != `BNE, op != `BEQ, op != `JAL}; // where to get 2nd ALU operand from: 0 for RtData, 1 for Immediate
 
     wire [31:0] imm_sign_extend = {{16{immediate[15]}}, immediate};
     wire [31:0] imm_upper = {immediate, 16'b0};
