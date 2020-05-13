@@ -152,8 +152,9 @@ module decode (
 
     wire [31:0] imm_sign_extend = {{16{immediate[15]}}, immediate};
     wire [31:0] imm_upper = {immediate, 16'b0};
+    wire [31:0] imm_lower = {16'b0, immediate};
 
-    wire [31:0] imm = (op == `LUI) ? imm_upper : imm_sign_extend;
+    wire [31:0] imm = (op == `LUI) ? imm_upper : ((op == `ORI) ? imm_lower : imm_sign_extend);
 
 //******************************************************************************
 // forwarding and stalling logic
