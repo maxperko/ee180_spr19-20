@@ -19,12 +19,11 @@ boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
     ori     $t0, $0, 0xe7c8     # A = 0xe7c8
-    ori     $t1, $0, 0xe7c9     # B = 0xe7c9
     nop
     nop
     nop
     nop
-    xori    $t2, $t0, $t1       # C = xor(A,B) = 0x1
+    xori    $t2, $t0, 0xe7c9    # C = xor(A,0xe7c9) = 0x1
     nop
     nop
     nop
