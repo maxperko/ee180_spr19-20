@@ -1,12 +1,12 @@
 ###############################################################################
-# File         : or.S
+# File         : nor.S
 # Project      : EE180 Lab 2: MIPS
 #
 # Standards/Formatting:
 #   MIPS gas, soft tab, 80 column
 #
 # Description:
-#   Test the functionality of the 'or' instruction.
+#   Test the functionality of the 'nor' instruction.
 #
 ###############################################################################
 
@@ -18,10 +18,10 @@
 boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
-    ori     $t0, $0, 1
+    ori     $t0, $0, 0
     nop
     nop
-    or      $t1, $0, $t0          # Prepare the 'done' status
+    nor     $t1, $0, $t0        # nor(0,0) = 1
     nop
     nop
     sw      $t1, 4($s0)         # Set the test result

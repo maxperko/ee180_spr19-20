@@ -1,5 +1,5 @@
 ###############################################################################
-# File         : xor.S
+# File         : xori.S
 # Project      : EE180 Lab 2: MIPS
 #
 # Standards/Formatting:
