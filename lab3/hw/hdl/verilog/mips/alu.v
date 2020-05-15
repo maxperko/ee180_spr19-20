@@ -44,6 +44,7 @@ module alu (
             // added by us
             `ALU_XOR:   alu_result = alu_op_x ^ alu_op_y;
             `ALU_NOR:   alu_result = ~(alu_op_x | alu_op_y);
+            `ALU_MUL:   alu_result = alu_op_x * alu_op_y;
             default:    alu_result = 32'hxxxxxxxx;   // undefined
         endcase
     end
