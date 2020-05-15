@@ -240,6 +240,6 @@ module decode (
                            isBNE & ~isEqual};
 
     assign jump_target = isJ;
-    assign jump_reg = ({op, funct} == {`SPECIAL, `JR)} ? 1'b1 : 1'b0;
+    assign jump_reg = ({op, funct} == {`SPECIAL, `JR}) ? 1'b1 : 1'b0;
 
 endmodule //decode
