@@ -90,9 +90,10 @@ module decode (
     wire isSRL = (op == `SPECIAL) & (funct == `SRL);
     wire isSLLV = (op == `SPECIAL) & (funct == `SLLV);
     wire isSRLV = (op == `SPECIAL) & (funct == `SRLV);
+    wire isSRA = (op == `SPECIAL) & (funct == `SRA);
 
     wire isShiftImm = isSLL | isSRL;
-    wire isShift = isShiftImm | isSLLV | isSRLV;
+    wire isShift = isShiftImm | isSLLV | isSRLV | isSRA;
 
 //******************************************************************************
 // ALU instructions decode / control signal for ALU datapath
