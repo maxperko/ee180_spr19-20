@@ -5,9 +5,20 @@ TO-DO:
 -----------------------------------------------
 1. Implement
 -----------------------------------------------
+- andi
+- beq
+- bgez
 - bgtz
-+ jal
+- blez
+- bltz
+- bne
+- fwd_idrs_ex
+- fwd_idrs_mem
+- jal	// dependent upon jr
+- jr	// not able to get addr from reg file?
 - jalr
+- lb
+- lbu
 - ll
 X movz
 X mul	// REDO
@@ -15,15 +26,18 @@ X nor
 X or
 - sb
 - sc
+- sltiu
 - sllv
 - slt
 - sltu
+- sra
+- srav
+- srl
+- srlv
+- stall_idrs_ex
+X sub
 - sw
 X xori
--------------------------
-Repair:
-- jr	// not able to get addr from reg file?
-
 
 -----------------------------------------------
 2. Add correct hazard detection, fowarding, and stall control.
