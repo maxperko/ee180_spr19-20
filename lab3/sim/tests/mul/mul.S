@@ -28,7 +28,9 @@ boot:
     xor     $v0, $t1, $t0       # $v0 = 8 ^ 8
     nop
     nop
-    nor     $v0, $0, $v0        # $v0 = ~0     
+    addi    $v0, $v0, 1		# $t0 = $t1 + $t2
+    nop
+    nop
     # lui     $t0, 0xffff         # A = 0xfffffffd (-3)
     # ori     $t0, $t0, 0xfffd
     # ori     $t1, $0, 0x4        # B = 0x4
