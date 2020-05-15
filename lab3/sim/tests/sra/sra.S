@@ -28,7 +28,7 @@ boot:
     lui     $t2, 0xfdea         # C = 0xfdeafbee
     nop
     nop
-    ori     $t2, $t2, 0xfbee
+    ori     $t2, $t2, 0xfbed
     nop
     nop
     subu    $v0, $t1, $t2       # D = B - C = 1
