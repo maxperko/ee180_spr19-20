@@ -5,7 +5,7 @@ TO-DO:
 -----------------------------------------------
 1. Implement
 -----------------------------------------------
-- andi
+X andi
 - beq
 - bgez
 - bgtz
@@ -27,11 +27,11 @@ X or
 - sb
 - sc
 X sltiu
-- sllv
-- slt
-- sltu
+X sllv
+X slt
+X sltu
 X sra
-- srav
+X srav
 X srl
 X srlv
 - stall_idrs_ex

@@ -172,7 +172,7 @@ module decode (
 // forwarding and stalling logic
 //******************************************************************************
 
-    wire forward_rs_mem = &{rs_addr == reg_write_addr_mem, rs_addr != `ZERO, reg_we_mem, {op, funct} != {`SPECIAL, `JR}}; // SEE SLIDE 50, Lecture 8
+    wire forward_rs_mem = &{rs_addr == reg_write_addr_mem, rs_addr != `ZERO, reg_we_mem}; // SEE SLIDE 50, Lecture 8
 
     assign rs_data = forward_rs_mem ? reg_write_data_mem : rs_data_in;
     assign rt_data = rt_data_in;
