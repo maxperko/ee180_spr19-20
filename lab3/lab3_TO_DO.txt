@@ -26,7 +26,7 @@ X nor
 X or
 - sb
 - sc
-- sltiu
+X sltiu
 - sllv
 - slt
 - sltu
