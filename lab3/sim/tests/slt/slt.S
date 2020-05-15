@@ -25,10 +25,10 @@ boot:
     ori     $t0, $t0, 0xfffd    # $t0 = -3
     nop
     nop
-    slt     $t0, $t0, $s0 
+    slt     $v0, $t0, $s0 
     nop
     nop
-    sw      $t0, 4($s0)         # Set the test result
+    sw      $v0, 4($s0)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
     
 $done:
