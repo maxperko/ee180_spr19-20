@@ -25,7 +25,7 @@ boot:
     ori     $t0, $t0, 0xfffd    # $t0 = -3
     nop
     nop
-    slt     $v0, $t0, $s0 
+    slt     $v0, $t0, $s1 
     nop
     nop
     sw      $v0, 4($s0)         # Set the test result
