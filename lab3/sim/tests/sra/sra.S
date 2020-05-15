@@ -31,12 +31,12 @@ boot:
     ori     $t2, $t2, 0xfbee
     nop
     nop
-    subu    $t3, $t1, $t2       # D = B - C = 1
+    subu    $v0, $t1, $t2       # D = B - C = 1
     nop
     nop
-    sltiu   $v0, $t3, 1
-    nop
-    nop
+    # sltiu   $v0, $t3, 1
+    # nop
+    # nop
     sw      $v0, 4($s0)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
 
