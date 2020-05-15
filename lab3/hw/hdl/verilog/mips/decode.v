@@ -167,12 +167,13 @@ module decode (
 // forwarding and stalling logic
 //******************************************************************************
 
-    wire forward_rs_mem = &{rs_addr == reg_write_addr_mem, rs_addr != `ZERO, reg_we_mem};
+    wire forward_rs_mem = &{rs_addr == reg_write_addr_mem, rs_addr != `ZERO, reg_we_mem}; // SEE SLIDE 50, Lecture 8
 
     assign rs_data = forward_rs_mem ? reg_write_data_mem : rs_data_in;
     assign rt_data = rt_data_in;
 
-    wire rs_mem_dependency = &{rs_addr == reg_write_addr_ex, mem_read_ex, rs_addr != `ZERO};
+    wire rs_mem_dependency = &{rs_addr == reg_write_addr_ex, mem_read_ex, rs_addr != `ZERO}; // Stall #1/2
+    // rt_mem_dependency                                                                     // Stall #2/2
 
     wire isLUI = op == `LUI;
     wire read_from_rs = ~|{isLUI, jump_target, isShiftImm};

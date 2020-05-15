@@ -37,7 +37,7 @@ module mips_cpu (
     wire [31:0] alu_result_ex, alu_result_mem;
     wire alu_op_y_zero_ex;
     wire mem_we_id, mem_we_ex;
-    wire mem_read_id, mem_read_ex, mem_read_mem;
+    wire mem_read_id, mem_read_ex, mem_read_mem;        // ***Currently set to 0; store/load will use these
     wire mem_byte_id, mem_byte_ex, mem_byte_mem;
     wire mem_signextend_id, mem_signextend_ex, mem_signextend_mem;
     wire [7:0] mem_read_data_byte_select;
@@ -161,8 +161,8 @@ module mips_cpu (
     dffare #(5) reg_write_addr_ex2mem (.clk(clk), .r(rst), .en(en), .d(reg_write_addr_ex), .q(reg_write_addr_mem));
     dffare reg_we_ex2mem (.clk(clk), .r(rst), .en(en), .d(reg_we_ex), .q(reg_we_mem));
 
-    assign mem_read_ex = 1'b0;
-    assign mem_read_mem = 1'b0;
+    assign mem_read_ex = 1'b0;          // CHANGE THIS WHEN WRITING
+    assign mem_read_mem = 1'b0;         // CHANGE THIS WHEN WRITING
     assign mem_read_en = mem_read_ex;
     assign mem_write_en[3] = mem_we_ex & (~mem_byte_ex | (mem_addr[1:0] == 2'b00));
     assign mem_write_en[2] = mem_we_ex & (~mem_byte_ex | (mem_addr[1:0] == 2'b01));
