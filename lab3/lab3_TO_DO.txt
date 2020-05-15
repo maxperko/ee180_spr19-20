@@ -30,9 +30,9 @@ X or
 - sllv
 - slt
 - sltu
-- sra
+X sra
 - srav
-- srl
+X srl
 - srlv
 - stall_idrs_ex
 X sub
