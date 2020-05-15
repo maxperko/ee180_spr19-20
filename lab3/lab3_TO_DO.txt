@@ -9,7 +9,8 @@ TO-DO:
 + jal
 - jalr
 - ll
-- movz
+X movz
+X mul	// REDO
 X nor
 X or
 - sb
@@ -21,7 +22,7 @@ X or
 X xori
 -------------------------
 Repair:
-- jr
+- jr	// not able to get addr from reg file?
 
 
 -----------------------------------------------
