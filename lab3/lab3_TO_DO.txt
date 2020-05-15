@@ -33,7 +33,7 @@ X or
 X sra
 - srav
 X srl
-- srlv
+X srlv
 - stall_idrs_ex
 X sub
 - sw
