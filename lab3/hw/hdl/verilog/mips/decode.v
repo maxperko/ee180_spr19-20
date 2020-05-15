@@ -133,6 +133,7 @@ module decode (
             {`XORI, `DC6}:      alu_opcode = `ALU_XOR;
             {`SPECIAL, `NOR}:   alu_opcode = `ALU_NOR;
             {`SPECIAL2, `MUL}:  alu_opcode = `ALU_MUL;
+            {`SPECIAL, `SRA}:   alu_opcode = `ALU_SRA;
 
             // compare rs data to 0, only care about 1 operand
             {`BGTZ, `DC6}:      alu_opcode = `ALU_PASSX;
