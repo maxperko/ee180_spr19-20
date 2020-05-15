@@ -193,7 +193,7 @@ module mips_cpu (
         .reg_we         (reg_we_wb),
         .rs_addr        (rs_addr_id),
         .rt_addr        (rt_addr_id),
-
+        //
         .rs_data        (rs_data_id),
         .rt_data        (rt_data_id)
     );
