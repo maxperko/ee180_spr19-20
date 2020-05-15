@@ -22,7 +22,7 @@ boot:
     lui	    $t0, 0x0
     nop
     nop
-    addiu	$t0, $t0, 40
+    addiu	$t0, $t0, 38
     # la      $t0, $target
     nop
     nop
