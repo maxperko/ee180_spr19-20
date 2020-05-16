@@ -188,7 +188,10 @@ module decode (
 
     wire isLUI = op == `LUI;
     wire isLW = op == `LW;
-    wire read_from_rs = ~|{isLUI, jump_target, isShiftImm, isLW, mem_read};
+    wire isLB = op == `LB;
+    wire isLBU = op == `LBU;
+
+    wire read_from_rs = ~|{isLUI, jump_target, isShiftImm, mem_read};
 
     wire isALUImm = |{op == `ADDI, op == `ADDIU, op == `SLTI, op == `SLTIU, op == `ANDI, op == `ORI};
     wire read_from_rt = ~|{isLUI, jump_target, isALUImm, mem_read};
@@ -227,7 +230,7 @@ module decode (
 // Memory control
 //******************************************************************************
     assign mem_we = |{op == `SW, op == `SB, op == `SC};    // write to memory
-    assign mem_read = isLW;                     // use memory data for writing to a register
+    assign mem_read = |{isLW, isLB, isLBU};                     // use memory data for writing to a register
     assign mem_byte = |{op == `SB, op == `LB, op == `LBU};    // memory operations use only one byte
     assign mem_signextend = ~|{op == `LBU};     // sign extend sub-word memory reads
 
