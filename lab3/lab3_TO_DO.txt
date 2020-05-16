@@ -6,12 +6,12 @@ TO-DO:
 1. Implement
 -----------------------------------------------
 X andi
-- beq
-- bgez
-- bgtz
-- blez
-- bltz
-- bne
+X beq
+X bgez
+X bgtz
+X blez
+X bltz
+X bne
 X fwd_idrs_ex
 X fwd_idrs_mem
 X jal
