@@ -248,11 +248,12 @@ module decode (
 //******************************************************************************
 // Branch resolution
 //******************************************************************************
+    wire signed [31:0] rs_data_signed = rs_data;
 
-    wire isEqual = rs_data == rt_data;
-    wire isEqualzero = rs_data == 0;
-    wire isLessThanzero = rs_data < 0;
-    wire isGreatThanzero = rs_data > 0;
+    wire isEqual = rs_data_signed == rt_data_signed;
+    wire isEqualzero = rs_data_signed == 0;
+    wire isLessThanzero = rs_data_signed < 0;
+    wire isGreatThanzero = rs_data_signed > 0;
 
     assign jump_branch = |{isBEQ & isEqual,
                            isBNE & ~isEqual,
