@@ -162,7 +162,7 @@ module decode (
 // Compute value for 32 bit immediate data
 //******************************************************************************
 
-    wire use_imm = &{op != `SPECIAL, op != `SPECIAL2, op != `BNE, op != `BEQ, op != `JAL}; // where to get 2nd ALU operand from: 0 for RtData, 1 for Immediate
+    wire use_imm = &{op != `SPECIAL, op != `SPECIAL2, op != `BNE, op != `BEQ, op != `JAL, ~isBranchLink}; // where to get 2nd ALU operand from: 0 for RtData, 1 for Immediate
 
     wire [31:0] imm_sign_extend = {{16{immediate[15]}}, immediate};
     wire [31:0] imm_upper = {immediate, 16'b0};
@@ -215,8 +215,8 @@ module decode (
     // for immediate operations, use Imm
     // otherwise use rt
 
-    assign alu_op_y = (use_imm) ? imm : ((isJAL | isJALR) ? (pc + 4'h8) : rt_data);
-    assign reg_write_addr = (use_imm) ? rt_addr : ((isJAL | isJALR) ? `RA : rd_addr);
+    assign alu_op_y = (use_imm) ? imm : ((isJAL | isJALR | isBranchLink) ? (pc + 4'h8) : rt_data);
+    assign reg_write_addr = (use_imm) ? rt_addr : ((isJAL | isJALR | isBranchLink) ? `RA : rd_addr);
 
     // determine when to write back to a register (any operation that isn't an
     // unconditional store, non-linking branch, or non-linking jump)
