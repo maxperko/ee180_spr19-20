@@ -251,6 +251,6 @@ module decode (
                            isBNE & ~isEqual};
 
     assign jump_target = (isJ | isJAL);
-    assign jump_reg = (isJAL | isJALR);
+    assign jump_reg = (isJR | isJALR);
 
 endmodule //decode
