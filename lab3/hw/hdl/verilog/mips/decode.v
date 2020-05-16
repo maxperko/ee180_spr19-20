@@ -249,6 +249,7 @@ module decode (
 // Branch resolution
 //******************************************************************************
     wire signed [31:0] rs_data_signed = rs_data;
+    wire signed [31:0] rt_data_signed = rt_data;
 
     wire isEqual = rs_data_signed == rt_data_signed;
     wire isEqualzero = rs_data_signed == 0;
