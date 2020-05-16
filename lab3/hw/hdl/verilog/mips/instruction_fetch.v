@@ -21,7 +21,7 @@ module instruction_fetch (
 
     wire [31:0] pc_id_p4 = pc_id + 3'h4;
     wire [31:0] j_addr = {pc_id_p4[31:28], instr_id[25:0], 2'b0};
-    wire [31:0] j_branch = pc_id_p4 + (instr_id[15:0] << 2);
+    wire [31:0] j_branch = pc_id_p4 + {14'b0, instr_id[15:0], 2'b0};
 
     wire [31:0] pc_next = (jump_target) ? j_addr : ((jump_reg) ? jr_pc_id : ((jump_branch) ? j_branch : (pc + 3'h4)));
 
