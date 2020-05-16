@@ -248,7 +248,7 @@ module decode (
     assign jump_branch = |{isBEQ & isEqual,
                            isBNE & ~isEqual};
 
-    assign jump_target = isJ;
+    assign jump_target = isJ | isJAL;
     assign jump_reg = ({op, funct} == {`SPECIAL, `JR}) ? 1'b1 : 1'b0;
 
 endmodule //decode

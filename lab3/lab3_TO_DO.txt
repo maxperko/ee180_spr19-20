@@ -15,7 +15,7 @@ X andi
 - fwd_idrs_ex
 - fwd_idrs_mem
 - jal	// dependent upon jr
-- jr	// not able to get addr from reg file?
+X jr
 - jalr
 - lb
 - lbu
