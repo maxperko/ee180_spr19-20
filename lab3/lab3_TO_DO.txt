@@ -8,9 +8,11 @@ TO-DO:
 X andi
 X beq
 X bgez
-X bgtz
+- bgezal
+- bgtz
 X blez
 X bltz
+- bltzal
 X bne
 X fwd_idrs_ex
 X fwd_idrs_mem
