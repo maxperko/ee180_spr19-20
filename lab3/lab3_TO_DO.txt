@@ -12,11 +12,11 @@ X andi
 - blez
 - bltz
 - bne
-- fwd_idrs_ex
-- fwd_idrs_mem
+X fwd_idrs_ex
+X fwd_idrs_mem
 X jal
 X jr
-- jalr
+X jalr
 - lb
 - lbu
 - ll
