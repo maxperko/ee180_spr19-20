@@ -250,9 +250,17 @@ module decode (
 //******************************************************************************
 
     wire isEqual = rs_data == rt_data;
+    wire isEqualzero = rs_data == 0;
+    wire isLessThanzero = rs_data < 0;
+    wire isGreatThanzero = rs_data > 0;
 
     assign jump_branch = |{isBEQ & isEqual,
-                           isBNE & ~isEqual};
+                           isBNE & ~isEqual,
+                           (isBGEZNL|isBGEZAL) & ~isLessThanzero,
+                           isBGTZ & isGreatThanzero,
+                           isBLEZ & ~isGreatThanzero,
+                           (isBLTZNL|isBLTZAL) & isLessThanzero
+                           };
 
     assign jump_target = (isJ | isJAL);
     assign jump_reg = (isJR | isJALR);
