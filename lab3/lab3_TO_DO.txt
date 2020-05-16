@@ -17,8 +17,8 @@ X fwd_idrs_mem
 X jal
 X jr
 X jalr
-- lb
-- lbu
+X lb
+X lbu
 - ll
 X movz
 X mul	// REDO
@@ -34,7 +34,7 @@ X sra
 X srav
 X srl
 X srlv
-- stall_idrs_ex
+X stall_idrs_ex
 X sub
 - sw
 X xori
