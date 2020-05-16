@@ -14,7 +14,7 @@ X andi
 - bne
 - fwd_idrs_ex
 - fwd_idrs_mem
-- jal	// dependent upon jr
+X jal
 X jr
 - jalr
 - lb
