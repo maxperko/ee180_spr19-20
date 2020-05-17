@@ -25,15 +25,15 @@ boot:
     ori     $t1, $t1, 0xbeef
     lui     $t2, 0xffff
     ori     $t2, $t2, 0xffde
-    sb      $t2, 3($t0)         # $t0 = 0xde000000
+    sb      $t2, 0($t0)         # $t0 = 0xde000000
     ori     $t3, $0, 0x0f
-    sb      $t3, 2($t0)         # $t0 = 0xde0f0000
+    sb      $t3, 1($t0)         # $t0 = 0xde0f0000
     lui     $t4, 0xffff
     ori     $t4, $t4, 0xffbe
-    sb      $t4, 1($t0)         # $t0 = 0xde0fbe00
+    sb      $t4, 2($t0)         # $t0 = 0xde0fbe00
     lui     $t5, 0xffff
     ori     $t5, $t5, 0xffee
-    sb      $t5, 0($t0)         # $t0 = 0xde0fbeee
+    sb      $t5, 3($t0)         # $t0 = 0xde0fbeee
     lw      $t2, 0($t0)
     subu    $v0, $t1, $t2
     sw      $v0, 4($s0)         # Set the test result
