@@ -33,8 +33,9 @@ boot:
     sb      $t4, 1($t0)         # $t0 = 0xde0fbe00
     lui     $t5, 0xffff
     ori     $t5, $t5, 0xffee
-    sb      $t5, 0($t0)         # $t0 = 0xde0fbeee   
-    subu    $v0, $t1, $t0
+    sb      $t5, 0($t0)         # $t0 = 0xde0fbeee
+    lw      $t2, 0($t0)
+    subu    $v0, $t1, $t2
     sw      $v0, 4($s0)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
 
