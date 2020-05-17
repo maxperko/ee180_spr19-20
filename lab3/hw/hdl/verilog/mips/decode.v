@@ -180,11 +180,12 @@ module decode (
     wire forward_rs_ex = &{rs_addr == reg_write_addr_ex, rs_addr != `ZERO, reg_we_ex}; // SEE SLIDE 50, Lecture 8
     wire forward_rt_ex = &{rt_addr == reg_write_addr_ex, rt_addr != `ZERO, reg_we_ex};
 
+    // check ex forward condition first in case of double data hazard
     assign rs_data = forward_rs_ex ? alu_result_ex : (forward_rs_mem ? reg_write_data_mem : rs_data_in);
     assign rt_data = forward_rt_ex ? alu_result_ex : (forward_rt_mem ? reg_write_data_mem : rt_data_in);
 
-    wire rs_mem_dependency = &{rs_addr == reg_write_addr_ex, mem_read_ex, rs_addr != `ZERO};
-    wire rt_mem_dependency = &{rt_addr == reg_write_addr_ex, mem_read_ex, rt_addr != `ZERO};                                                                
+    wire rs_mem_dependency = &{rs_addr == reg_write_addr_ex, mem_read_ex, rs_addr != `ZERO}; // Stall condition 1
+    wire rt_mem_dependency = &{rt_addr == reg_write_addr_ex, mem_read_ex, rt_addr != `ZERO}; // Stall condition 2
 
     wire isLUI = op == `LUI;
     wire isLW = op == `LW;

@@ -15,7 +15,9 @@ X bltz
 X bltzal
 X bne
 X fwd_idrs_ex
+X fwd_idrt_ex
 X fwd_idrs_mem
+X fwd_idrt_mem
 X jal
 X jr
 X jalr
@@ -37,6 +39,7 @@ X srav
 X srl
 X srlv
 X stall_idrs_ex
+X stall_idrt_ex
 X sub
 X sw
 X xori
