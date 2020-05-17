@@ -19,8 +19,6 @@ boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
     ori     $t0, $0, 0xfff0
-    nop
-    nop
     ori     $t1, $t0, 0x000f
     xor     $t2, $t0, $t1
     nop
@@ -30,6 +28,5 @@ boot:
 
 $done:
     j       $done
-    nop
 
     .end boot
