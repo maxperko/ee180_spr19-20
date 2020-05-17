@@ -21,21 +21,9 @@ boot:
     ori     $t0, $0, 0x3210     # Load some valid address 0x00003210 to register $t0
     ori     $t1, $0, 0xffff     # Constant for memory read
     ori     $t2, $0, 0xfffe     # Result mask
-    nop
-    nop
-    nop
-    nop
     sw      $t1, 0($t0)
-    nop
-    nop
-    nop
-    nop
-    nop
     lw      $t3, 0($t0)
     xor     $t4, $t2, $t3
-    nop
-    nop
-    nop
     nop
     nop
     sw      $t4, 4($s0)         # Set the test result
@@ -43,6 +31,5 @@ boot:
 
 $done:
     j       $done
-    nop
 
     .end boot

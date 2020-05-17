@@ -19,21 +19,11 @@ boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
     lui     $t0, 0xdeaf         # A = 0xdeafbeef
-    nop
-    nop
     ori     $t0, $t0, 0xbeef
-    nop
-    nop
     sra     $t1, $t0, 4         # B = 0xdeafbeef >> 4 = 0xfdeafbee
     lui     $t2, 0xfdea         # C = 0xfdeafbee
-    nop
-    nop
     ori     $t2, $t2, 0xfbed
-    nop
-    nop
     subu    $v0, $t1, $t2       # D = B - C = 1
-    nop
-    nop
     # sltiu   $v0, $t3, 1
     # nop
     # nop
@@ -42,6 +32,5 @@ boot:
 
 $done:
     j       $done
-    nop
 
     .end boot
