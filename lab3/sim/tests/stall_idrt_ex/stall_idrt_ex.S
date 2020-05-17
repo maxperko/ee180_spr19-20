@@ -1,12 +1,12 @@
 ###############################################################################
-# File         : fwd_idrt_mem.S
+# File         : stall_idrt_ex.S
 # Project      : EE180 Lab 2: MIPS
 #
 # Standards/Formatting:
 #   MIPS gas, soft tab, 80 column
 #
 # Description:
-#   Test the functionality of forwarding from MEM to ID.Rt
+#   Test the functionality of stalling in ID from an Rt mem access in EX
 #
 ###############################################################################
 
@@ -18,26 +18,27 @@
 boot:
     lui     $s0, 0x8002         # Load the base address of the status/test registers
     ori     $s1, $0, 1          # Prepare the 'done' status
-    ori     $t0, $0, 0x000f
+    ori     $t0, $0, 0x3210     # Load some valid address 0x00003210 to register $t0
+    ori     $t1, $0, 0xffff     # Constant for memory read
+    ori     $t2, $0, 0xfffe     # Result mask
+    nop
+    nop
+    nop
+    nop
+    sw      $t1, 0($t0)
     nop
     nop
     nop
     nop
     nop
-    ori     $t1, $0, 0xfff0
-    or      $t2, $t0, $t1
+    lw      $t3, 0($t0)
+    xor     $t4, $t2, $t3
     nop
     nop
     nop
     nop
     nop
-    xori    $t3, $t2, 0xfffe
-    nop
-    nop
-    nop
-    nop
-    nop
-    sw      $t3, 4($s0)         # Set the test result
+    sw      $t4, 4($s0)         # Set the test result
     sw      $s1, 0($s0)         # Set 'done'
 
 $done:

@@ -1,12 +1,12 @@
 ###############################################################################
-# File         : fwd_idrt_mem.S
+# File         : fwd_idrs_mem.S
 # Project      : EE180 Lab 2: MIPS
 #
 # Standards/Formatting:
 #   MIPS gas, soft tab, 80 column
 #
 # Description:
-#   Test the functionality of forwarding from MEM to ID.Rt
+#   Test the functionality of forwarding from MEM to ID.Rs
 #
 ###############################################################################
 
@@ -25,7 +25,7 @@ boot:
     nop
     nop
     ori     $t1, $0, 0xfff0
-    or      $t2, $t0, $t1
+    or      $t2, $t1, $t0
     nop
     nop
     nop

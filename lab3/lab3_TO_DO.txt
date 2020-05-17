@@ -38,7 +38,7 @@ X srl
 X srlv
 X stall_idrs_ex
 X sub
-- sw
+X sw
 X xori
 
 -----------------------------------------------
