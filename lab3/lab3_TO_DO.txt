@@ -26,7 +26,7 @@ X movz
 X mul	// REDO
 X nor
 X or
-- sb
+X sb
 - sc
 X sltiu
 X sllv
