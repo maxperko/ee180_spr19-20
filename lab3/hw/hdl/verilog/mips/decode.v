@@ -191,6 +191,7 @@ module decode (
     wire isLW = op == `LW;
     wire isLB = op == `LB;
     wire isLBU = op == `LBU;
+    wire isLL = op == `LL;
 
     wire read_from_rs = ~|{isLUI, jump_target, isShiftImm, mem_read};
 
@@ -231,7 +232,7 @@ module decode (
 // Memory control
 //******************************************************************************
     assign mem_we = |{op == `SW, op == `SB, op == `SC};    // write to memory
-    assign mem_read = |{isLW, isLB, isLBU};                     // use memory data for writing to a register
+    assign mem_read = |{isLW, isLB, isLBU, isLL};                     // use memory data for writing to a register
     assign mem_byte = |{op == `SB, op == `LB, op == `LBU};    // memory operations use only one byte
     assign mem_signextend = ~|{op == `LBU};     // sign extend sub-word memory reads
 
@@ -241,10 +242,14 @@ module decode (
     assign mem_sc_id = (op == `SC);
 
     // 'atomic_id' is high when a load-linked has not been followed by a store.
-    assign atomic_id = 1'b0;
+    // check if op is LL and assign atomic_is to 1. any store condition (mem_we high) will set atomic to 0
+    // otherwise assign to atomic_ex, which is the passed on value of atomic_id in the pipeline
+    // atomic = 1 will continously get fed back until a store occurs
+    assign atomic_id = isLL ? 1'b1 : (mem_we ? 1'b0 : atomic_ex);
 
     // 'mem_sc_mask_id' is high when a store conditional should not store
-    assign mem_sc_mask_id = 1'b0;
+    // if atomic_ex is 1, then mask goes low to allow store, else mask stays high for store to occur
+    assign mem_sc_mask_id = mem_sc_id & (~atomic_ex);
 
 //******************************************************************************
 // Branch resolution
