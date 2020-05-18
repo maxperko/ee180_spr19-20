@@ -30,5 +30,6 @@ boot:
 
 $done:
     j       $done
+    nop
 
     .end boot
