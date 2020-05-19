@@ -9,6 +9,10 @@ Date:	 20200520
 
 Instructions/Functions Implemented (& Tested):
 -----------------------------------------------
+    add
+    addiu
+    addu
+    and
     andi
     beq
     bgez
@@ -22,21 +26,27 @@ Instructions/Functions Implemented (& Tested):
     fwd_idrt_ex
     fwd_idrs_mem
     fwd_idrt_mem
+    j
     jal
-    jr
     jalr
+    jr
     lb
     lbu
     ll
+    lui
+    lw
+    movn
     movz
     mul
     nor
     or
+    ori
     sb
     sc
-    sltiu
-    sllv
+    sll
     slt
+    slti
+    sltiu
     sltu
     sra
     srav
@@ -45,7 +55,9 @@ Instructions/Functions Implemented (& Tested):
     stall_idrs_ex
     stall_idrt_ex
     sub
+    subu
     sw
+    xor
     xori
 
 
@@ -53,4 +65,17 @@ Instructions/Functions Implemented (& Tested):
 Data Path Changes (Forwarding/Stalling):
 -----------------------------------------------
 
-    
+    decode.v
+        - Added logic for triggers forward_rt_mem, forward_rs_ex, and forward_rs_ex based
+            on existing forward_rs_mem and using lecture 8 slide 50 as a guide.
+        - Edited ternary statement for assigning rs_data and rt_data based on forward 
+            signals. Checked for forward_ex signals first and then forward_mem signals second 
+            to prevent double data hazard situation.
+        - Added rt_mem_dependency signal based on existing rs_mem_dependency signal.
+        - Edited ternary statement for assigning stall signal to include rt_mem_dependency and 
+            read_from_rt.
+        
+    mips_cpu.v
+        - Filled in flip flop d and q inputs for mem_read propagation from id2ex and ex2mem.
+        - commented out hard-coded assignments for mem_read_ex and mem_read_mem.
+        - ensured instantiations had the correct input/output naming for relevant signals.
