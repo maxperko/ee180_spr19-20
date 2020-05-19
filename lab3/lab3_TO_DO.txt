@@ -23,13 +23,13 @@ X jr
 X jalr
 X lb
 X lbu
-- ll
+X ll
 X movz
 X mul	// REDO
 X nor
 X or
 X sb
-- sc
+X sc
 X sltiu
 X sllv
 X slt

@@ -5,7 +5,52 @@ Group:	 6a
 Date:	 20200520
 ---------------------------------------------------------------------------
 
-TO-DO:
-• List of instructions implemented
-• Description of changes made to the control and datapath to handle hazards and forwarding
-• (Extra credit only) Description of optimizations made to both software and hardware
+
+
+Instructions/Functions Implemented (& Tested):
+-----------------------------------------------
+    andi
+    beq
+    bgez
+    bgezal
+    bgtz
+    blez
+    bltz
+    bltzal
+    bne
+    fwd_idrs_ex
+    fwd_idrt_ex
+    fwd_idrs_mem
+    fwd_idrt_mem
+    jal
+    jr
+    jalr
+    lb
+    lbu
+    ll
+    movz
+    mul
+    nor
+    or
+    sb
+    sc
+    sltiu
+    sllv
+    slt
+    sltu
+    sra
+    srav
+    srl
+    srlv
+    stall_idrs_ex
+    stall_idrt_ex
+    sub
+    sw
+    xori
+
+
+
+Data Path Changes (Forwarding/Stalling):
+-----------------------------------------------
+
+    
