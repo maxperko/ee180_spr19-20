@@ -148,18 +148,28 @@ dffre #(IOBUF_ADDR_WIDTH)               buf_write_offset_r (                    
 // *** Row address increment ***
 // The value of this signal specifies the width of an output row.
 // Insert your code here.
-assign      buf_write_row_incr                  = 'h0;
+// assign      buf_write_row_incr                  = 'h0;
+// input row width - 2
+assign      buf_write_row_incr                  = control_n_cols - 2;
 
 // *** Column strip increment ***
 // The value of this signal specifies the start column of the next column strip.
 // Insert your code here.
-assign      next_col_strip                      = 'h0;
+// assign      next_col_strip                      = 'h0;
+// current col strip + number of accelerators
+assign      next_col_strip                      = col_strip + `NUM_SOBEL_ACCELERATORS;
 
 // *** Column strip maximum ***
 // The value of this signal is the termination condition.
 // What is the highest possible value of col_strip that indicates there are still more input pixels to process?
 // Insert your code here.
-assign      max_col_strip                       = 'h0;
+// assign      max_col_strip                       = 'h0;
+// number of cols - number of accelerators
+assign      max_col_strip                       = control_n_cols - `NUM_SOBEL_ACCELERATORS;
+// may need to also check here for column number / number of accelerators
+wire [IMAGE_DIM_WIDTH-1:0] mod;
+assign      mod                                 = control_n_cols % `NUM_SOBEL_ACCELERATORS;
+assign      max_col_strip                       = mod == 0 ? (control_n_cols - `NUM_SOBEL_ACCELERATORS) : (control_n_cols - mod);
 
 generate
 for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
@@ -167,7 +177,11 @@ for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
 // *** Write enable ***
 // If pixel_write_en[i] is set to 1, this tells the memory system that the current pixel at index i from the Sobel accelerator contains valid data to be written.
 // Make sure to only set it to 1 when the Sobel accelerator is producing valid data at that pixel position.
-assign      pixel_write_en[i]                   = 'h0;
+//assign      pixel_write_en[i]                   = 'h0;
+// check if number of input columns are divisible by number of accelerators and assign appropriately
+// maybe assign to buf_write_en instead of 1
+// check if below is possible within a generate loop
+assign      pixel_write_en[i]                   = mod == 0 ? 1 : ((col_strip == max_col_strip) & (i < mod) ? 1 : 0);
 
 end
 endgenerate
