@@ -526,7 +526,7 @@ always @ (*) begin
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
             // buf_read_offset_next                = 3*control_n_cols + col_strip;
-            buf_read_offset_next                = buf_read_offset + control_n_cols;
+            buf_read_offset_next                = buf_read_offset;
         end
         
         STATE_LOADING_3: begin
@@ -585,7 +585,8 @@ always @ (*) begin
     case (state)
         STATE_WAIT: begin
             // What should the starting value be? Insert your code here.
-            buf_write_offset_next               = 'h0;
+            // buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_row_incr;
         end
         
         STATE_LOADING_1: begin
