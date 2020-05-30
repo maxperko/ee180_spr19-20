@@ -100,7 +100,7 @@ generate
             // *** Calculation of the overall Sobel convolution result ***
             // The horizontal and vertical convolutions must be combined in a way that faithfully implements the Sobel convolution algorithm.
             // sobel_sum[c] = 'h0;
-            sobel_sum[c] = ((convx[c] + convy[c]) > 12'b255) ? 12'b255 : (convx[c] + convy[c]);
+            sobel_sum[c] = ((convx[c] + convy[c]) > 12'hff) ? 12'hff : (convx[c] + convy[c]);
             // sobel_sum[c] = convx[c] + convy[c];
             
             // *** Writing out the Sobel convolution result ***
