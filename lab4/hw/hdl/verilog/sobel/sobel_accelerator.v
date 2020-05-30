@@ -79,7 +79,7 @@ generate
             // You may declare more signals as needed.
             // convx[c]   = 'h0;
             convx_signed_sum[c] = convx11[c] + convx12[c] + convx13[c] - convx31[c] - convx32[c] - convx33[c];
-            convx[c] = (convx_signed_sum < 0) ? -convx_signed_sum : convx_signed_sum;
+            convx[c] = (convx_signed_sum[c] < 0) ? -convx_signed_sum[c] : convx_signed_sum[c];
             
             // *** Calculation of the vertical Sobel convolution ***
             // Each "convy" value corresponds to an input to that calculation, a different pixel in the 9-by-9 grid.
@@ -95,7 +95,7 @@ generate
             // You may declare more signals as needed.
             // convy[c]   = 'h0;
             convy_signed_sum[c] = convy11[c] + convy21[c] + convy31[c] - convy13[c] - convy23[c] - convy33[c];
-            convy[c] = (convy_signed_sum < 0) ? -convy_signed_sum : convy_signed_sum;
+            convy[c] = (convy_signed_sum[c] < 0) ? -convy_signed_sum[c] : convy_signed_sum[c];
             
             // *** Calculation of the overall Sobel convolution result ***
             // The horizontal and vertical convolutions must be combined in a way that faithfully implements the Sobel convolution algorithm.
