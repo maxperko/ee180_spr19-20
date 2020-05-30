@@ -551,7 +551,7 @@ always @ (*) begin
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = control_n_cols + next_col_strip;
+            buf_read_offset_next                = next_col_strip;
         end
         
         STATE_PROCESSING_DONE: begin
