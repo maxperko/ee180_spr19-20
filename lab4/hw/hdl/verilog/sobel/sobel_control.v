@@ -478,7 +478,7 @@ always @ (*) begin
         
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            col_strip_next                      = 'h0;
+            col_strip_next                      = col_strip;
         end
         
         STATE_ERROR: begin
@@ -556,7 +556,7 @@ always @ (*) begin
         
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = 'h0;
+            buf_read_offset_next                = buf_read_offset;
         end
         
         STATE_ERROR: begin
@@ -615,7 +615,7 @@ always @ (*) begin
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = next_col_strip;
+            buf_write_offset_next               = col_strip == max_col_strip ? buf_write_offset : next_col_strip;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
@@ -625,7 +625,7 @@ always @ (*) begin
         
         STATE_PROCESSING_DONE: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_write_offset_next               = 'h0;
+            buf_write_offset_next               = buf_write_offset;
         end
         
         STATE_ERROR: begin
