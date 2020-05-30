@@ -509,7 +509,7 @@ always @ (*) begin
             if (go) begin
                 // Once the control signal is asserted, does something need to happen?
                 // Think about what the next state is going to be and what data the accelerator expects to get.
-                buf_read_offset_next            = control_n_cols + col_strip;
+                buf_read_offset_next            = control_n_cols;
             end else begin
                 // If there is no control signal, just read from the beginning of the image.
                 // This part is provided for you.
@@ -534,22 +534,22 @@ always @ (*) begin
         
         STATE_PROCESSING_CALC: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + control_n_cols;
+            buf_read_offset_next                = buf_read_offset;
         end
         
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = buf_read_offset + control_n_cols;
         end
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = control_n_cols + next_col_strip;
+            buf_read_offset_next                = buf_read_offset;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = control_n_cols + next_col_strip;
         end
         
         STATE_PROCESSING_DONE: begin
