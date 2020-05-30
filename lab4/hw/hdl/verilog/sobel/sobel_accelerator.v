@@ -45,8 +45,8 @@ assign      sacc2swt_write_data                 = sobel_out;
 // *** Extra signal declarations ***
 // If you need any extra signals to help with the convolution, declare them here. Otherwise, you may remove these comments.
 // Note that you will need to use "reg" (not "wire") for any signals written to inside the "always" block.
-reg signed [11:0]   convx_signed_sum[`NUM_SOBEL_ACCELERATORS-1:0]
-reg signed [11:0]   convy_signed_sum[`NUM_SOBEL_ACCELERATORS-1:0]
+reg signed [11:0]   convx_signed_sum[`NUM_SOBEL_ACCELERATORS-1:0];
+reg signed [11:0]   convy_signed_sum[`NUM_SOBEL_ACCELERATORS-1:0];
 
 
 
