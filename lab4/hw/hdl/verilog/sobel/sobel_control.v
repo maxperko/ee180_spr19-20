@@ -546,7 +546,7 @@ always @ (*) begin
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = buf_read_offset + control_n_cols;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
@@ -585,8 +585,7 @@ always @ (*) begin
     case (state)
         STATE_WAIT: begin
             // What should the starting value be? Insert your code here.
-            // buf_write_offset_next               = 'h0;
-            buf_write_offset_next               = buf_write_row_incr;
+            buf_write_offset_next               = 'h0;
         end
         
         STATE_LOADING_1: begin
