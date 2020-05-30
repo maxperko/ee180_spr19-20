@@ -526,7 +526,7 @@ always @ (*) begin
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
             // buf_read_offset_next                = 3*control_n_cols + col_strip;
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = buf_read_offset + control_n_cols;
         end
         
         STATE_LOADING_3: begin
