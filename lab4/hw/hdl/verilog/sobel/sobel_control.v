@@ -545,7 +545,7 @@ always @ (*) begin
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = buf_read_offset + control_n_cols; //start reading ahead for next column
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
