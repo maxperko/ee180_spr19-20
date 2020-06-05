@@ -83,8 +83,8 @@ assign      sctl2srt_read_addr                  = buf_read_offset;
 assign      sctl2swt_write_addr                 = buf_write_offset;
 assign      sctl2srow_row_op                    = row_op;
 assign      sctl2stop_status                    = {{STATUS_REG_WIDTH-STATE_WIDTH-2{1'b0}}, state, (state == STATE_ERROR), (state == STATE_PROCESSING_DONE)};
-// assign      sctl2swt_write_en                   = go ? pixel_write_en : 'h0;
-assign      sctl2swt_write_en                   = go ? (pixel_write_en & (`NUM_SOBEL_ACCELERATORS{buf_write_en})) : 'h0;
+assign      sctl2swt_write_en                   = go ? pixel_write_en : 'h0;
+// assign      sctl2swt_write_en                   = go ? (pixel_write_en & (`NUM_SOBEL_ACCELERATORS{buf_write_en})) : 'h0;
 
 // Registers
 dffr #(STATE_WIDTH)                     state_r (                               // main state register
@@ -182,7 +182,7 @@ for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
 // check if number of input columns are divisible by number of accelerators and assign appropriately
 // maybe assign to buf_write_en instead of 1
 // check if below is possible within a generate loop
-assign      pixel_write_en[i]                   = mod == 0 ? 1 : ((col_strip == max_col_strip) & (i < mod) ? 1 : 0);
+assign      pixel_write_en[i]                   = mod == 0 ? buf_write_en : ((col_strip == max_col_strip) & (i < mod) ? buf_write_en : 0);
 
 end
 endgenerate
