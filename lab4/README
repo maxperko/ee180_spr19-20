@@ -8,9 +8,13 @@ Date:		20200608
 Description of Changes:
 --------------------------------------------------------------------------------------------------------------------
 
-	The bulk of our debugging came from a two cycle offset in the read/write process that we could not see simply by
-	viewing the GTK waveform of our implementation.  There exists a two cycle offset. . . . < Nikhil >
+	Main struggles:
 
+	The bulk of our debugging came from a two cycle offset in the read/calc(write) process that we could not see simply by
+	viewing the GTK waveform of our implementation.  There exists a two cycle offset (read and then shift) before data
+	is ready for the calc stage. We were originally reading only one cycle before the calc stage.
+
+	All tests pass for the 2 accelerator case. Most tests pass for > 2 accelerator cases, but not all.
 
 
 	sobel_accelerator.v:

@@ -84,7 +84,6 @@ assign      sctl2swt_write_addr                 = buf_write_offset;
 assign      sctl2srow_row_op                    = row_op;
 assign      sctl2stop_status                    = {{STATUS_REG_WIDTH-STATE_WIDTH-2{1'b0}}, state, (state == STATE_ERROR), (state == STATE_PROCESSING_DONE)};
 assign      sctl2swt_write_en                   = go ? pixel_write_en : 'h0;
-// assign      sctl2swt_write_en                   = go ? (pixel_write_en & (`NUM_SOBEL_ACCELERATORS{buf_write_en})) : 'h0;
 
 // Registers
 dffr #(STATE_WIDTH)                     state_r (                               // main state register
@@ -180,8 +179,7 @@ for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
 // Make sure to only set it to 1 when the Sobel accelerator is producing valid data at that pixel position.
 //assign      pixel_write_en[i]                   = 'h0;
 // check if number of input columns are divisible by number of accelerators and assign appropriately
-// maybe assign to buf_write_en instead of 1
-// check if below is possible within a generate loop
+// assign to buf_write_en instead of 1
 assign      pixel_write_en[i]                   = mod == 0 ? buf_write_en : ((col_strip == max_col_strip) & (i < mod) ? buf_write_en : 0);
 
 end
@@ -527,12 +525,12 @@ always @ (*) begin
         STATE_LOADING_2: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
             // buf_read_offset_next                = 3*control_n_cols + col_strip;
-            buf_read_offset_next                = buf_read_offset;
+            buf_read_offset_next                = buf_read_offset; //already reading 3rd row
         end
         
         STATE_LOADING_3: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + control_n_cols;
+            buf_read_offset_next                = buf_read_offset + control_n_cols; // increment for next read
         end
         
         STATE_PROCESSING_CALC: begin
@@ -542,12 +540,12 @@ always @ (*) begin
         
         STATE_PROCESSING_LOADSS: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + control_n_cols;
+            buf_read_offset_next                = buf_read_offset + control_n_cols; //increment for next read
         end
         
         STATE_PROCESSING_CALC_LAST: begin
             // What happens in this state? Insert your code here. If nothing changes, you can remove this case completely.
-            buf_read_offset_next                = buf_read_offset + control_n_cols;
+            buf_read_offset_next                = buf_read_offset;
         end
         
         STATE_PROCESSING_LOADSS_LAST: begin
