@@ -83,7 +83,8 @@ assign      sctl2srt_read_addr                  = buf_read_offset;
 assign      sctl2swt_write_addr                 = buf_write_offset;
 assign      sctl2srow_row_op                    = row_op;
 assign      sctl2stop_status                    = {{STATUS_REG_WIDTH-STATE_WIDTH-2{1'b0}}, state, (state == STATE_ERROR), (state == STATE_PROCESSING_DONE)};
-assign      sctl2swt_write_en                   = go ? pixel_write_en : 'h0;
+// assign      sctl2swt_write_en                   = go ? pixel_write_en : 'h0;
+assign      sctl2swt_write_en                   = go ? (pixel_write_en & (`NUM_SOBEL_ACCELERATORS{buf_write_en})) : 'h0;
 
 // Registers
 dffr #(STATE_WIDTH)                     state_r (                               // main state register
