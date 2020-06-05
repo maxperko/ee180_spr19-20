@@ -1,16 +1,63 @@
------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
 Authors:	Nikhil Hira, Max Perko
 Course:		EE 180 - Spring 2020 - Kozyrakis
 Assignment:	Lab 4
 Date:		20200608
------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
 
-	Description of Changes:
-	-------------------------------------
-	< accelerator core >
-	< state machines >
+Description of Changes:
+--------------------------------------------------------------------------------------------------------------------
+
+	The bulk of our debugging came from a two cycle offset in the read/write process that we could not see simply by
+	viewing the GTK waveform of our implementation.  There exists a two cycle offset. . . . < Nikhil >
 
 
-	(Extra Credit) Descripton of Changes:
-	-------------------------------------
-	< pipelined datapath >
+
+	sobel_accelerator.v:
+	---------------------------------------------------------
+
+		Implementing the appropriate sobel edge detection convolution was straight-forward.  The following lines depict the
+		bulk of our contribution, which comes straight from the definition of sobel convolution:
+
+			---------------------
+			convx_signed_sum[c] = convx31[c] + convx32[c] + convx33[c] - convx11[c] - convx12[c] - convx13[c];
+			convx[c] = (convx_signed_sum[c] < 0) ? -convx_signed_sum[c] : convx_signed_sum[c];
+			//
+			convy_signed_sum[c] = convy13[c] + convy23[c] + convy33[c] - convy11[c] - convy21[c] - convy31[c];
+			convy[c] = (convy_signed_sum[c] < 0) ? -convy_signed_sum[c] : convy_signed_sum[c];
+			//
+			sobel_sum[c] = ((convx[c] + convy[c]) > 12'hff) ? 12'hff : (convx[c] + convy[c]);
+			---------------------
+
+
+
+	sobel_control.v:
+	---------------------------------------------------------
+
+		Aside from assignment of the required states and their associated state variables, the bulk of our implementation
+		took the form of dimension-related edge controls and enabling different numbers of accelerators accordingly.
+
+		For example, the following lines show a ternary assignment for the pixel_write_en array, based on a max_col_strip
+		calculation that involves a mod of the buf_write_row_increment and the number of instantiated accelerator cores.
+		This assignment occurs naturally within a generate block, allowing for dynamic structural control:
+			
+			---------------------
+			wire [IMAGE_DIM_WIDTH-1:0] mod;
+			assign      mod                           = buf_write_row_incr % `NUM_SOBEL_ACCELERATORS;
+			assign      max_col_strip                 = mod == 0 ? (buf_write_row_incr - `NUM_SOBEL_ACCELERATORS) : (buf_write_row_incr - mod);
+			//
+			generate
+			for (i = 0; i < `NUM_SOBEL_ACCELERATORS; i = i + 1) begin: sobel_write_en
+			assign      pixel_write_en[i]             = mod == 0 ? buf_write_en : ((col_strip == max_col_strip) & (i < mod) ? buf_write_en : 0);
+			end
+			endgenerate
+			---------------------
+
+		Moreover, we ensured writes to the output buffer were only possible by performing the following assignment, which is
+		ultimately made possible by the assignment of pixel_write_en during state changes as well:
+			
+			---------------------
+			assign      sctl2swt_write_en             = go ? pixel_write_en : 'h0;
+			---------------------
+		
+
